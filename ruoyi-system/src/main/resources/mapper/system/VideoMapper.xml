@@ -6,6 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <resultMap type="Video" id="VideoResult">
         <result property="id"    column="id"    />
+        <result property="img"    column="img"    />
         <result property="url"    column="url"    />
         <result property="title"    column="title"    />
         <result property="category"    column="category"    />
@@ -19,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectVideoVo">
-        select id, url, title, category, status, remark, type, create_by, create_time, update_by, update_time from v_video
+        select id, img, url, title, category, status, remark, type, create_by, create_time, update_by, update_time from v_video
     </sql>
 
     <select id="selectVideoList" parameterType="Video" resultMap="VideoResult">
@@ -41,6 +42,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertVideo" parameterType="Video" useGeneratedKeys="true" keyProperty="id">
         insert into v_video
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="img != null">img,</if>
             <if test="url != null">url,</if>
             <if test="title != null">title,</if>
             <if test="category != null">category,</if>
@@ -53,6 +55,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">update_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="img != null">#{img},</if>
             <if test="url != null">#{url},</if>
             <if test="title != null">#{title},</if>
             <if test="category != null">#{category},</if>
@@ -69,6 +72,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateVideo" parameterType="Video">
         update v_video
         <trim prefix="SET" suffixOverrides=",">
+            <if test="img != null">img = #{img},</if>
             <if test="url != null">url = #{url},</if>
             <if test="title != null">title = #{title},</if>
             <if test="category != null">category = #{category},</if>

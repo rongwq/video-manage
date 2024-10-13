@@ -18,6 +18,9 @@ public class Video extends BaseEntity
     /** 视频ID */
     private Long id;
 
+    @Excel(name = "视频图片url")
+    private String img;
+
     /** 视频url */
     @Excel(name = "视频url")
     private String url;
@@ -108,5 +111,13 @@ public class Video extends BaseEntity
             .append("updateBy", getUpdateBy())
             .append("updateTime", getUpdateTime())
             .toString();
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
     }
 }

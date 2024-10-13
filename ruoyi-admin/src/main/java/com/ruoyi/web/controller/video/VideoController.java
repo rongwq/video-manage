@@ -37,7 +37,6 @@ public class VideoController extends BaseController
     /**
      * 查询视频列表
      */
-    @PreAuthorize("@ss.hasPermi('system:video:list')")
     @GetMapping("/list")
     public TableDataInfo list(Video video)
     {

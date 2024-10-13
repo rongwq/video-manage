@@ -140,6 +140,9 @@
         <el-form-item label="视频url" prop="url">
           <el-input v-model="form.url" placeholder="请输入内容" />
         </el-form-item>
+        <el-form-item label="视频图片" prop="appFile">
+          <file-upload v-model="form.img" limit="1" fileSize="50" :fileType="['jpg','jpeg','bmp','gif','png']"/>
+        </el-form-item>
         <el-form-item label="视频标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入视频标题" />
         </el-form-item>
