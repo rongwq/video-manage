@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.VideoAdMapper">
+    
+    <resultMap type="VideoAd" id="VideoAdResult">
+        <result property="id"    column="id"    />
+        <result property="videoId"    column="video_id"    />
+        <result property="adId"    column="ad_id"    />
+        <result property="adShowTime"    column="ad_show_time"    />
+        <result property="adContinueTime"    column="ad_continue_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectVideoAdVo">
+        select id, video_id, ad_id, ad_show_time, ad_continue_time, create_by, create_time, update_by, update_time from v_video_ad
+    </sql>
+
+    <select id="selectVideoAdList" parameterType="com.ruoyi.system.domain.VideoAd" resultType="com.ruoyi.system.domain.VideoAd">
+        select v.id, v.video_id videoId, v.ad_id adId, v.ad_show_time adShowTime, v.ad_continue_time adContinueTime, v.create_by createBy, v.create_time createTime, v.update_by updateBy, v.update_time updateTime,
+        a.url adUrl,a.title adTitle,a.type adType
+        from v_video_ad v
+        left join v_ad a on a.id = v.ad_id
+        <where>  
+            <if test="videoId != null "> and video_id = #{videoId}</if>
+            <if test="adId != null "> and ad_id = #{adId}</if>
+            <if test="adShowTime != null "> and ad_show_time = #{adShowTime}</if>
+            <if test="adContinueTime != null "> and ad_continue_time = #{adContinueTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectVideoAdById" parameterType="Long" resultMap="VideoAdResult">
+        <include refid="selectVideoAdVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertVideoAd" parameterType="VideoAd" useGeneratedKeys="true" keyProperty="id">
+        insert into v_video_ad
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="videoId != null">video_id,</if>
+            <if test="adId != null">ad_id,</if>
+            <if test="adShowTime != null">ad_show_time,</if>
+            <if test="adContinueTime != null">ad_continue_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="videoId != null">#{videoId},</if>
+            <if test="adId != null">#{adId},</if>
+            <if test="adShowTime != null">#{adShowTime},</if>
+            <if test="adContinueTime != null">#{adContinueTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateVideoAd" parameterType="VideoAd">
+        update v_video_ad
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="videoId != null">video_id = #{videoId},</if>
+            <if test="adId != null">ad_id = #{adId},</if>
+            <if test="adShowTime != null">ad_show_time = #{adShowTime},</if>
+            <if test="adContinueTime != null">ad_continue_time = #{adContinueTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteVideoAdById" parameterType="Long">
+        delete from v_video_ad where id = #{id}
+    </delete>
+
+    <delete id="deleteVideoAdByIds" parameterType="String">
+        delete from v_video_ad where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

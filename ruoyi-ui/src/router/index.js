@@ -161,7 +161,21 @@ export const dynamicRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
-  }
+  },
+  {
+     path: '/video/ad-data',
+     component: Layout,
+     hidden: true,
+     permissions: ['system:video:list'],
+     children: [
+       {
+         path: 'index/:videoId(\\d+)',
+         component: () => import('@/views/video/video/video_ad'),
+         name: 'Data',
+         meta: { title: '广告数据', activeMenu: '/video/video' }
+       }
+     ]
+   }
 ]
 
 // 防止连续点击多次路由报错
