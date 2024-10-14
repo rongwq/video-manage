@@ -5,6 +5,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
+import java.util.List;
+
 /**
  * 视频对象 v_video
  * 
@@ -40,6 +42,9 @@ public class Video extends BaseEntity
     /** 视频类型1免费无广告 2收费 3免费有广告 */
     @Excel(name = "视频类型1免费无广告 2收费 3免费有广告")
     private String type;
+
+    /** 广告列表 */
+    private List<VideoAd> adList;
 
     public void setId(Long id) 
     {
@@ -119,5 +124,13 @@ public class Video extends BaseEntity
 
     public void setImg(String img) {
         this.img = img;
+    }
+
+    public List<VideoAd> getAdList() {
+        return adList;
+    }
+
+    public void setAdList(List<VideoAd> adList) {
+        this.adList = adList;
     }
 }

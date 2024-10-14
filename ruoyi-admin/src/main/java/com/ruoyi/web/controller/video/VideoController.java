@@ -2,6 +2,9 @@ package com.ruoyi.web.controller.video;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.system.domain.VideoAd;
+import com.ruoyi.system.service.IVideoAdService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +36,8 @@ public class VideoController extends BaseController
 {
     @Autowired
     private IVideoService VideoService;
+    @Autowired
+    private IVideoAdService videoAdService;
 
     /**
      * 查询视频列表
@@ -42,6 +47,11 @@ public class VideoController extends BaseController
     {
         startPage();
         List<Video> list = VideoService.selectVideoList(video);
+        VideoAd videoAd = new VideoAd();
+        list.forEach(i->{
+            videoAd.setVideoId(i.getId());
+            i.setAdList(videoAdService.selectVideoAdList(videoAd));
+        });
         return getDataTable(list);
     }
 
