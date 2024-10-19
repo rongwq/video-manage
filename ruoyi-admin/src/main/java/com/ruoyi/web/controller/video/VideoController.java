@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.video;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.system.domain.VideoAd;
 import com.ruoyi.system.service.IVideoAdService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,6 +44,7 @@ public class VideoController extends BaseController
      * 查询视频列表
      */
     @GetMapping("/list")
+    @Anonymous
     public TableDataInfo list(Video video)
     {
         startPage();
