@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysUserExtMapper">
+    
+    <resultMap type="SysUserExt" id="SysUserExtResult">
+        <result property="userId"    column="user_id"    />
+        <result property="idCard"    column="id_card"    />
+        <result property="realName"    column="real_name"    />
+        <result property="bankCard"    column="bank_card"    />
+        <result property="qrCode"    column="qr_code"    />
+        <result property="integral"    column="integral"    />
+        <result property="puserId"    column="puser_id"    />
+        <result property="getArticleTime"    column="get_article_time"    />
+    </resultMap>
+
+    <sql id="selectSysUserExtVo">
+        select user_id, id_card, real_name, bank_card, qr_code, integral, puser_id, get_article_time from sys_user_ext
+    </sql>
+
+    <select id="selectSysUserExtList" parameterType="SysUserExt" resultMap="SysUserExtResult">
+        <include refid="selectSysUserExtVo"/>
+        <where>  
+            <if test="idCard != null  and idCard != ''"> and id_card = #{idCard}</if>
+            <if test="realName != null  and realName != ''"> and real_name like concat('%', #{realName}, '%')</if>
+            <if test="bankCard != null  and bankCard != ''"> and bank_card = #{bankCard}</if>
+            <if test="qrCode != null  and qrCode != ''"> and qr_code = #{qrCode}</if>
+            <if test="integral != null "> and integral = #{integral}</if>
+            <if test="puserId != null "> and puser_id = #{puserId}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysUserExtByUserId" parameterType="Long" resultMap="SysUserExtResult">
+        <include refid="selectSysUserExtVo"/>
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insertSysUserExt" parameterType="SysUserExt">
+        insert into sys_user_ext
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="idCard != null">id_card,</if>
+            <if test="realName != null">real_name,</if>
+            <if test="bankCard != null">bank_card,</if>
+            <if test="qrCode != null">qr_code,</if>
+            <if test="integral != null">integral,</if>
+            <if test="puserId != null">puser_id,</if>
+            <if test="getArticleTime != null">get_article_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="idCard != null">#{idCard},</if>
+            <if test="realName != null">#{realName},</if>
+            <if test="bankCard != null">#{bankCard},</if>
+            <if test="qrCode != null">#{qrCode},</if>
+            <if test="integral != null">#{integral},</if>
+            <if test="puserId != null">#{puserId},</if>
+            <if test="getArticleTime != null">#{getArticleTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysUserExt" parameterType="SysUserExt">
+        update sys_user_ext
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="idCard != null">id_card = #{idCard},</if>
+            <if test="realName != null">real_name = #{realName},</if>
+            <if test="bankCard != null">bank_card = #{bankCard},</if>
+            <if test="qrCode != null">qr_code = #{qrCode},</if>
+            <if test="integral != null">integral = #{integral},</if>
+            <if test="puserId != null">puser_id = #{puserId},</if>
+            <if test="getArticleTime != null">get_article_time = #{getArticleTime},</if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteSysUserExtByUserId" parameterType="Long">
+        delete from sys_user_ext where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteSysUserExtByUserIds" parameterType="String">
+        delete from sys_user_ext where user_id in 
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+</mapper>

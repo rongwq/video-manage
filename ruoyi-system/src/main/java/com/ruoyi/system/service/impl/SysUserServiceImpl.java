@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Validator;
+
+import com.ruoyi.system.domain.SysUserExt;
+import com.ruoyi.system.mapper.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +25,6 @@ import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.domain.SysUserPost;
 import com.ruoyi.system.domain.SysUserRole;
-import com.ruoyi.system.mapper.SysPostMapper;
-import com.ruoyi.system.mapper.SysRoleMapper;
-import com.ruoyi.system.mapper.SysUserMapper;
-import com.ruoyi.system.mapper.SysUserPostMapper;
-import com.ruoyi.system.mapper.SysUserRoleMapper;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysUserService;
@@ -43,6 +41,9 @@ public class SysUserServiceImpl implements ISysUserService
 
     @Autowired
     private SysUserMapper userMapper;
+
+    @Autowired
+    private SysUserExtMapper userExtMapper;
 
     @Autowired
     private SysRoleMapper roleMapper;
@@ -262,6 +263,10 @@ public class SysUserServiceImpl implements ISysUserService
     {
         // 新增用户信息
         int rows = userMapper.insertUser(user);
+        //新增用户扩展信息
+        SysUserExt sysUserExt = new SysUserExt();
+        sysUserExt.setUserId(user.getUserId());
+        userExtMapper.insertSysUserExt(sysUserExt);
         // 新增用户岗位关联
         insertUserPost(user);
         // 新增用户与角色管理
