@@ -13,10 +13,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="integral"    column="integral"    />
         <result property="puserId"    column="puser_id"    />
         <result property="getArticleTime"    column="get_article_time"    />
+        <result property="shopUrl"    column="shop_url"    />
     </resultMap>
 
     <sql id="selectSysUserExtVo">
-        select user_id, id_card, real_name, bank_card, qr_code, integral, puser_id, get_article_time from sys_user_ext
+        select user_id, id_card, real_name, bank_card, qr_code, integral, puser_id, get_article_time, shop_url from sys_user_ext
     </sql>
 
     <select id="selectSysUserExtList" parameterType="SysUserExt" resultMap="SysUserExtResult">
@@ -47,6 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="integral != null">integral,</if>
             <if test="puserId != null">puser_id,</if>
             <if test="getArticleTime != null">get_article_time,</if>
+            <if test="shopUrl != null">shop_url,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
@@ -57,6 +59,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="integral != null">#{integral},</if>
             <if test="puserId != null">#{puserId},</if>
             <if test="getArticleTime != null">#{getArticleTime},</if>
+            <if test="shopUrl != null">#{shopUrl},</if>
          </trim>
     </insert>
 
@@ -70,6 +73,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="integral != null">integral = #{integral},</if>
             <if test="puserId != null">puser_id = #{puserId},</if>
             <if test="getArticleTime != null">get_article_time = #{getArticleTime},</if>
+            <if test="shopUrl != null">shop_url = #{shopUrl},</if>
         </trim>
         where user_id = #{userId}
     </update>

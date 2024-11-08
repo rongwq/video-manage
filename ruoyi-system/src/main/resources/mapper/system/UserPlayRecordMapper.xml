@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserPlayRecordMapper">
+    
+    <resultMap type="UserPlayRecord" id="UserPlayRecordResult">
+        <result property="id"    column="id"    />
+        <result property="vedioId"    column="vedio_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectUserPlayRecordVo">
+        select id, vedio_id, user_id, create_by, create_time, update_by, update_time from v_user_play_record
+    </sql>
+
+    <select id="selectUserPlayRecordList" parameterType="UserPlayRecord" resultMap="UserPlayRecordResult">
+        <include refid="selectUserPlayRecordVo"/>
+        <where>  
+            <if test="vedioId != null "> and vedio_id = #{vedioId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserPlayRecordById" parameterType="Long" resultMap="UserPlayRecordResult">
+        <include refid="selectUserPlayRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertUserPlayRecord" parameterType="UserPlayRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into v_user_play_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="vedioId != null">vedio_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="vedioId != null">#{vedioId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserPlayRecord" parameterType="UserPlayRecord">
+        update v_user_play_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="vedioId != null">vedio_id = #{vedioId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserPlayRecordById" parameterType="Long">
+        delete from v_user_play_record where id = #{id}
+    </delete>
+
+    <delete id="deleteUserPlayRecordByIds" parameterType="String">
+        delete from v_user_play_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

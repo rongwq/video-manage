@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserLikeRecordMapper">
+    
+    <resultMap type="UserLikeRecord" id="UserLikeRecordResult">
+        <result property="id"    column="id"    />
+        <result property="vedioId"    column="vedio_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectUserLikeRecordVo">
+        select id, vedio_id, user_id, create_by, create_time, update_by, update_time from v_user_like_record
+    </sql>
+
+    <select id="selectUserLikeRecordList" parameterType="UserLikeRecord" resultMap="UserLikeRecordResult">
+        <include refid="selectUserLikeRecordVo"/>
+        <where>  
+            <if test="vedioId != null "> and vedio_id = #{vedioId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+        </where>
+    </select>
+    
+    <select id="selectUserLikeRecordById" parameterType="Long" resultMap="UserLikeRecordResult">
+        <include refid="selectUserLikeRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertUserLikeRecord" parameterType="UserLikeRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into v_user_like_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="vedioId != null">vedio_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="vedioId != null">#{vedioId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserLikeRecord" parameterType="UserLikeRecord">
+        update v_user_like_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="vedioId != null">vedio_id = #{vedioId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserLikeRecordById" parameterType="Long">
+        delete from v_user_like_record where id = #{id}
+    </delete>
+
+    <delete id="deleteUserLikeRecordByIds" parameterType="String">
+        delete from v_user_like_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -32,7 +32,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:video:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -43,7 +44,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:video:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -54,7 +56,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:video:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -64,22 +67,23 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:video:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="videoList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="视频url" align="center" prop="url" />
-      <el-table-column label="视频标题" align="center" prop="title" />
-      <el-table-column label="视频分类" align="center" prop="category" >
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="视频url" align="center" prop="url"/>
+      <el-table-column label="视频分类" align="center" prop="category">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.video_category" :value="scope.row.category"/>
         </template>
       </el-table-column>
-      <el-table-column label="描述" align="center" prop="remark" />
-      <el-table-column label="视频类型" align="center" prop="type" >
+      <el-table-column label="视频标题" align="center" prop="title"/>
+      <el-table-column label="描述" align="center" prop="remark"/>
+      <el-table-column label="视频类型" align="center" prop="type">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.video_type" :value="scope.row.type"/>
         </template>
@@ -93,21 +97,24 @@
             icon="el-icon-circle-check"
             @click="handleAdConf(scope.row)"
             v-hasPermi="['system:video:edit']"
-          >广告配置</el-button>
+          >广告配置
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:video:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:video:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -123,14 +130,24 @@
     <!-- 添加或修改视频对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="视频分类" prop="category">
-          <el-radio-group v-model="form.category">
-            <el-radio
-              v-for="dict in dict.type.video_category"
-              :key="dict.value"
-              :label="dict.value"
-            >{{dict.label}}</el-radio>
-          </el-radio-group>
+        <el-form-item label="视频分类">
+<!--          <el-checkbox v-model="categoryExpand" @change="handleCheckedTreeExpand($event)">展开/折叠-->
+<!--          </el-checkbox>-->
+<!--          <el-checkbox v-model="categoryNodeAll" @change="handleCheckedTreeNodeAll($event)">全选/全不选-->
+<!--          </el-checkbox>-->
+<!--          <el-checkbox v-model="form.categoryCheckStrictly" @change="handleCheckedTreeConnect($event)">-->
+<!--            父子联动-->
+<!--          </el-checkbox>-->
+          <el-tree
+            class="tree-border"
+            :data="categoryOptions"
+            show-checkbox
+            ref="category"
+            node-key="id"
+            :check-strictly="!form.categoryCheckStrictly"
+            empty-text="加载中，请稍候"
+            :props="defaultProps"
+          ></el-tree>
         </el-form-item>
         <el-form-item label="视频类型" prop="type">
           <el-radio-group v-model="form.type">
@@ -138,23 +155,24 @@
               v-for="dict in dict.type.video_type"
               :key="dict.value"
               :label="dict.value"
-            >{{dict.label}}</el-radio>
+            >{{dict.label}}
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="视频" prop="appFile">
           <file-upload v-model="form.url" limit="1" fileSize="500" :fileType="['mp4', 'avi', 'rmvb']"/>
         </el-form-item>
         <el-form-item label="视频url" prop="url">
-          <el-input v-model="form.url" placeholder="请输入内容" />
+          <el-input v-model="form.url" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="视频图片" prop="appFile">
           <file-upload v-model="form.img" limit="1" fileSize="50" :fileType="['jpg','jpeg','bmp','gif','png']"/>
         </el-form-item>
         <el-form-item label="视频标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入视频标题" />
+          <el-input v-model="form.title" placeholder="请输入视频标题"/>
         </el-form-item>
         <el-form-item label="描述" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入描述" />
+          <el-input v-model="form.remark" placeholder="请输入描述"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -167,6 +185,7 @@
 
 <script>
 import { listVideo, getVideo, delVideo, addVideo, updateVideo } from "@/api/video/video";
+import { treeSelect } from "@/api/video/category";
 
 export default {
   name: "Video",
@@ -177,6 +196,11 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      // 菜单列表
+      categoryOptions: [],
+      categoryExpand: false,
+      categoryNodeAll: false,
+      categoryCheckStrictly: true,
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -203,6 +227,10 @@ export default {
       },
       // 表单参数
       form: {},
+      defaultProps: {
+        children: "children",
+        label: "label"
+      },
       // 表单校验
       rules: {
       }
@@ -212,6 +240,20 @@ export default {
     this.getList();
   },
   methods: {
+    getTreeSelect() {
+      treeSelect().then(response => {
+        this.categoryOptions = response.data;
+      });
+    },
+        // 所有菜单节点数据
+    getAllCheckedKeys() {
+      // 目前被选中的菜单节点
+      let checkedKeys = this.$refs.category.getCheckedKeys();
+      // 半选中的菜单节点
+      let halfCheckedKeys = this.$refs.category.getHalfCheckedKeys();
+      checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
+      return checkedKeys;
+    },
     /** 查询视频列表 */
     getList() {
       this.loading = true;
@@ -239,7 +281,9 @@ export default {
         createBy: null,
         createTime: null,
         updateBy: null,
-        updateTime: null
+        updateTime: null,
+        categoryExpand: false,
+        categoryNodeAll: false
       };
       this.resetForm("form");
     },
@@ -262,12 +306,14 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      this.getTreeSelect();
       this.open = true;
       this.title = "添加视频";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+      this.getTreeSelect();
       const id = row.id || this.ids
       getVideo(id).then(response => {
         this.form = response.data;
@@ -280,12 +326,14 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form.category = this.getAllCheckedKeys().join(",");
             updateVideo(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form.category = this.getAllCheckedKeys().join(",");
             addVideo(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
@@ -314,7 +362,24 @@ export default {
     handleAdConf(row){
       const videoId = row.id;
       this.$router.push("/video/ad-data/index/" + videoId);
+    },
+    // 树权限（展开/折叠）
+    handleCheckedTreeExpand(value) {
+        let treeList = this.categoryOptions;
+        for (let i = 0; i < treeList.length; i++) {
+          this.$refs.category.store.nodesMap[treeList[i].id].expanded = value;
+        }
+    },
+    // 树权限（全选/全不选）
+    handleCheckedTreeNodeAll(value) {
+        this.$refs.category.setCheckedNodes(value ? this.categoryOptions: []);
+    },
+    // 树权限（父子联动）
+    handleCheckedTreeConnect(value) {
+        this.form.categoryCheckStrictly = value ? true: false;
     }
   }
 };
+
+
 </script>
