@@ -29,6 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="orderNum != null "> and order_num = #{orderNum}</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
+        order by order_num asc, id asc
     </select>
     
     <select id="selectVideoCategoryById" parameterType="Long" resultMap="VideoCategoryResult">

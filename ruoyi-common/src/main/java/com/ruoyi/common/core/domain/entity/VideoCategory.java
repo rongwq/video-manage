@@ -50,4 +50,6 @@ public class VideoCategory extends BaseEntity {
     private Integer orderNum;
 
     private List<VideoCategory> children = new ArrayList<VideoCategory>();
+
+    private List<Video> videoList = new ArrayList<Video>();
 }

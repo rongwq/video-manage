@@ -1,7 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import java.util.List;
-import com.ruoyi.system.domain.Video;
+import com.ruoyi.common.core.domain.entity.Video;
 
 /**
  * 视频Mapper接口
@@ -58,4 +58,6 @@ public interface VideoMapper
      * @return 结果
      */
     public int deleteVideoByIds(Long[] ids);
+
+    List<Video> selectVideoListByCategoryId(Long categoryId);
 }

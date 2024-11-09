@@ -20,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select id, video_id, ad_id, ad_show_time, ad_continue_time, create_by, create_time, update_by, update_time from v_video_ad
     </sql>
 
-    <select id="selectVideoAdList" parameterType="com.ruoyi.system.domain.VideoAd" resultType="com.ruoyi.system.domain.VideoAd">
+    <select id="selectVideoAdList" parameterType="com.ruoyi.common.core.domain.entity.VideoAd" resultType="com.ruoyi.common.core.domain.entity.VideoAd">
         select v.id, v.video_id videoId, v.ad_id adId, v.ad_show_time adShowTime, v.ad_continue_time adContinueTime, v.create_by createBy, v.create_time createTime, v.update_by updateBy, v.update_time updateTime,
         a.url adUrl,a.title adTitle,a.type adType
         from v_video_ad v

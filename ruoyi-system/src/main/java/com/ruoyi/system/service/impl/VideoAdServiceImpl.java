@@ -5,7 +5,7 @@ import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.mapper.VideoAdMapper;
-import com.ruoyi.system.domain.VideoAd;
+import com.ruoyi.common.core.domain.entity.VideoAd;
 import com.ruoyi.system.service.IVideoAdService;
 
 /**

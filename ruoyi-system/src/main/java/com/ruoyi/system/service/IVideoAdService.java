@@ -1,7 +1,7 @@
 package com.ruoyi.system.service;
 
 import java.util.List;
-import com.ruoyi.system.domain.VideoAd;
+import com.ruoyi.common.core.domain.entity.VideoAd;
 
 /**
  * 视频广告关联Service接口

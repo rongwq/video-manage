@@ -5,7 +5,7 @@ import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.mapper.VideoMapper;
-import com.ruoyi.system.domain.Video;
+import com.ruoyi.common.core.domain.entity.Video;
 import com.ruoyi.system.service.IVideoService;
 
 /**
@@ -42,6 +42,10 @@ public class VideoServiceImpl implements IVideoService
     public List<Video> selectVideoList(Video video)
     {
         return VideoMapper.selectVideoList(video);
+    }
+    @Override
+    public List<Video> selectVideoListByCategoryId(Long categoryId){
+        return VideoMapper.selectVideoListByCategoryId(categoryId);
     }
 
     /**

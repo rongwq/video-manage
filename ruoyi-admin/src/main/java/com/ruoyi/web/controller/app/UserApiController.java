@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.app;
 
+import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.controller.BaseController;
@@ -64,6 +65,7 @@ public class UserApiController extends BaseController {
     @ApiOperation("注册用户")
     @PostMapping("/reg")
     @Transactional(rollbackFor = Exception.class)
+    @Anonymous
     public R<String> reg(@RequestBody UserData.RegUserParam regUser) {
         SysUser user = new SysUser();
         user.setUserName(regUser.getUserName());
@@ -72,9 +74,13 @@ public class UserApiController extends BaseController {
         user.setRoleId(100L);//代理角色id
         user.setDeptId(100L);//若依科技
         user.setEmail(regUser.getEmail());
-        SysUser puser = userService.selectUserByUserName(regUser.getPuserId());
-        if (puser==null) {
-            return R.fail("代理用户'" + regUser.getPuserId() + "'不存在");
+        user.setNickName(regUser.getUserName());
+        SysUser puser = null;
+        if(StringUtils.isNotEmpty(regUser.getPuserId())) {
+            puser = userService.selectUserByUserName(regUser.getPuserId());
+            if (puser == null) {
+                return R.fail("代理用户'" + regUser.getPuserId() + "'不存在");
+            }
         }
         Cdkey Cdkey = CdkeyService.selectCdkeyByCdkeyCode(regUser.getCdkey());
         if (Cdkey == null) {
@@ -106,7 +112,9 @@ public class UserApiController extends BaseController {
             SysUserExt ext = userExtService.selectSysUserExtByUserId(user.getUserId());
             if(ext!=null) {
                 BeanUtils.copyBeanProp(ext, regUser);
-                ext.setPuserId(puser.getUserId());
+                if(puser!=null) {
+                    ext.setPuserId(puser.getUserId());
+                }
                 userExtService.updateSysUserExt(ext);
             }
         }
@@ -122,6 +130,7 @@ public class UserApiController extends BaseController {
     @PostMapping("/login")
     @ApiOperation("用户登录")
     @Log(title = "用户登录", businessType = BusinessType.INSERT)
+    @Anonymous
     public R login(@RequestBody LoginBody loginBody) {
         // 生成令牌
         String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
@@ -130,21 +139,4 @@ public class UserApiController extends BaseController {
         map.put(Constants.TOKEN, token);
         return R.ok(map);
     }
-
-    /**
-     * 修改用户信息
-     *
-     * @param ext
-     * @return 结果
-     */
-    @PostMapping("/edit")
-    @ApiOperation("修改用户信息")
-    @Log(title = "修改用户信息", businessType = BusinessType.UPDATE)
-    public R edit(@RequestBody SysUserExt ext) {
-        LoginUser user = getLoginUser();
-        ext.setUserId(user.getUserId());
-        userExtService.updateSysUserExt(ext);
-        return R.ok();
-    }
-
 }

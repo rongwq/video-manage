@@ -1,7 +1,7 @@
 package com.ruoyi.system.service;
 
 import java.util.List;
-import com.ruoyi.system.domain.Video;
+import com.ruoyi.common.core.domain.entity.Video;
 
 /**
  * 视频Service接口
@@ -26,6 +26,8 @@ public interface IVideoService
      * @return 视频集合
      */
     public List<Video> selectVideoList(Video video);
+
+    List<Video> selectVideoListByCategoryId(Long categoryId);
 
     /**
      * 新增视频

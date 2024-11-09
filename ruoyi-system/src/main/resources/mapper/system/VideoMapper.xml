@@ -28,10 +28,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="url != null  and url != ''"> and url = #{url}</if>
             <if test="title != null  and title != ''"> and title = #{title}</if>
-            <if test="category != null  and category != ''"> and category = #{category}</if>
+            <if test="category != null  and category != ''"> and (category = #{category} or category like concat(#{category},',%') or category like concat('%,',#{category}) or category like concat('%,',#{category},',%'))</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
             <if test="type != null  and type != ''"> and type = #{type}</if>
         </where>
+        order by create_time desc
     </select>
     
     <select id="selectVideoById" parameterType="Long" resultMap="VideoResult">
@@ -97,4 +98,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectVideoListByCategoryId" parameterType="Long" resultMap="VideoResult">
+        <include refid="selectVideoVo"/>
+        where category = #{id} or category like concat(#{id},',%') or category like concat('%,',#{id}) or category like concat('%,',#{id},',%')
+        order by create_time desc
+        limit 6
+    </select>
 </mapper>
