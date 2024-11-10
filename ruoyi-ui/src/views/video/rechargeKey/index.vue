@@ -83,7 +83,11 @@
       <el-table-column label="充值卡编码" align="center" prop="code" />
       <el-table-column label="充值卡额度" align="center" prop="money" />
       <el-table-column label="绑定用户" align="center" prop="userId" />
-      <el-table-column label="状态" align="center" prop="status" />
+      <el-table-column label="状态" align="center" prop="status" >
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.cdkey_status" :value="scope.row.status"/>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -112,17 +116,30 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改充值卡对话框 -->
+    <!-- 添加激活码对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+        <el-form-item label="生成数量" prop="createNumber">
+          <el-input-number v-model="form.createNumber" placeholder="请输入生成数量"></el-input-number>
+        </el-form-item>
+        <el-form-item label="充值卡额度" prop="money">
+          <el-input v-model="form.money" placeholder="请输入充值卡额度" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 修改充值卡对话框 -->
+    <el-dialog :title="title" :visible.sync="editOpen" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="充值卡编码" prop="code">
           <el-input v-model="form.code" placeholder="请输入充值卡编码" />
         </el-form-item>
         <el-form-item label="充值卡额度" prop="money">
           <el-input v-model="form.money" placeholder="请输入充值卡额度" />
-        </el-form-item>
-        <el-form-item label="绑定用户" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入绑定用户" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -137,6 +154,7 @@
 import { listKey, getKey, delKey, addKey, updateKey } from "@/api/video/rechargeKey";
 
 export default {
+  dicts: ['cdkey_status'],
   name: "Key",
   data() {
     return {
@@ -158,6 +176,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      editOpen: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -193,6 +212,7 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
+      this.editOpen = false;
       this.reset();
     },
     // 表单重置
@@ -238,7 +258,7 @@ export default {
       const id = row.id || this.ids
       getKey(id).then(response => {
         this.form = response.data;
-        this.open = true;
+        this.editOpen = true;
         this.title = "修改充值卡";
       });
     },

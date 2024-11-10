@@ -10,12 +10,16 @@
         />
       </el-form-item>
       <el-form-item label="视频分类" prop="category">
-        <el-input
-          v-model="queryParams.category"
-          placeholder="请输入视频分类"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          <el-tree
+            class="tree-border"
+            :data="categoryOptions"
+            show-checkbox
+            ref="searchCategory"
+            node-key="id"
+            :check-strictly="!form.categoryCheckStrictly"
+            empty-text="加载中，请稍候"
+            :props="defaultProps"
+          ></el-tree>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -238,12 +242,22 @@ export default {
   },
   created() {
     this.getList();
+    this.getTreeSelect();
   },
   methods: {
     getTreeSelect() {
       treeSelect().then(response => {
         this.categoryOptions = response.data;
       });
+    },
+        // 所有菜单节点数据-查询条件
+    getAllCheckedKeysSearch() {
+      // 目前被选中的菜单节点
+      let checkedKeys = this.$refs.searchCategory.getCheckedKeys();
+      // 半选中的菜单节点
+      let halfCheckedKeys = this.$refs.searchCategory.getHalfCheckedKeys();
+      checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
+      return checkedKeys;
     },
         // 所有菜单节点数据
     getAllCheckedKeys() {
@@ -290,6 +304,7 @@ export default {
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
+      this.queryParams.category = this.getAllCheckedKeysSearch().join(",");
       this.getList();
     },
     /** 重置按钮操作 */

@@ -84,7 +84,7 @@ public class CdkeyServiceImpl implements ICdkeyService
         for (int i = 0; i < number; i++) {
             Cdkey Cdkey = new Cdkey();
             Cdkey.setCdkeyCode(generateActivationCode());
-            Cdkey.setStatus(CdkeyStatus.ENABLED.getCode());
+            Cdkey.setStatus(CdkeyStatus.UN_ENABLED.getCode());
             Cdkey.setCreateTime(DateUtils.getNowDate());
             cdkeyMapper.insertCdkey(Cdkey);
         }

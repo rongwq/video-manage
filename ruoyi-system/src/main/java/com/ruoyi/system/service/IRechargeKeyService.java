@@ -36,6 +36,14 @@ public interface IRechargeKeyService
     public int insertRechargeKey(RechargeKey rechargeKey);
 
     /**
+     * 批量生成激活码
+     *
+     * @param number 激活码数量
+     * @return 结果
+     */
+    public int autoCreatekey(Integer number,Long money);
+
+    /**
      * 修改充值卡
      * 
      * @param rechargeKey 充值卡

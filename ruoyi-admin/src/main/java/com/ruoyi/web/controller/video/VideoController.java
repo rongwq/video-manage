@@ -1,11 +1,15 @@
 package com.ruoyi.web.controller.video;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.domain.entity.VideoAd;
+import com.ruoyi.common.core.domain.entity.VideoCategory;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.service.IVideoAdService;
+import com.ruoyi.system.service.IVideoCategoryService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +43,8 @@ public class VideoController extends BaseController
     private IVideoService VideoService;
     @Autowired
     private IVideoAdService videoAdService;
+    @Autowired
+    private IVideoCategoryService videoCategoryService;
 
     /**
      * 查询视频列表
@@ -53,6 +59,19 @@ public class VideoController extends BaseController
         list.forEach(i->{
             videoAd.setVideoId(i.getId());
             i.setAdList(videoAdService.selectVideoAdList(videoAd));
+            //将视频的分类转化为文字
+            if(StringUtils.isNotEmpty(i.getCategory())) {
+                String[] categoryArr = i.getCategory().split(",");
+                List<String> newCategory = new ArrayList<>();
+                for(String s : categoryArr){
+                    VideoCategory videoCategory = videoCategoryService.selectVideoCategoryById(Long.parseLong(s));
+                    if(videoCategory!=null){
+                        newCategory.add(videoCategory.getName());
+                    }
+                }
+                i.setCategory(StringUtils.join(newCategory, ","));
+
+            }
         });
         return getDataTable(list);
     }

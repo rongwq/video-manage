@@ -20,9 +20,8 @@ export function getKey(id) {
 // 新增充值卡
 export function addKey(data) {
   return request({
-    url: '/video/rechargeKey',
+    url: '/video/rechargeKey/autoCreate?number='+data.createNumber+'&money='+data.money,
     method: 'post',
-    data: data
   })
 }
 

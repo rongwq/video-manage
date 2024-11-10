@@ -1,12 +1,17 @@
 package com.ruoyi.system.service.impl;
 
 import java.util.List;
+
+import com.ruoyi.common.enums.CdkeyStatus;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.system.domain.Cdkey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.mapper.RechargeKeyMapper;
 import com.ruoyi.system.domain.RechargeKey;
 import com.ruoyi.system.service.IRechargeKeyService;
+
+import static com.ruoyi.system.service.impl.CdkeyServiceImpl.generateActivationCode;
 
 /**
  * 充值卡Service业务层处理
@@ -55,6 +60,19 @@ public class RechargeKeyServiceImpl implements IRechargeKeyService
     {
         rechargeKey.setCreateTime(DateUtils.getNowDate());
         return rechargeKeyMapper.insertRechargeKey(rechargeKey);
+    }
+
+    @Override
+    public int autoCreatekey(Integer number, Long money) {
+        for (int i = 0; i < number; i++) {
+            RechargeKey key = new RechargeKey();
+            key.setCode(generateActivationCode());
+            key.setStatus(CdkeyStatus.UN_ENABLED.getCode());
+            key.setCreateTime(DateUtils.getNowDate());
+            key.setMoney(money);
+            rechargeKeyMapper.insertRechargeKey(key);
+        }
+        return 1;
     }
 
     /**
