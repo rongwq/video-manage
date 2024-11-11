@@ -97,4 +97,16 @@ public class VideoServiceImpl implements IVideoService
     {
         return VideoMapper.deleteVideoById(id);
     }
+
+    @Override
+    public int updateLikeNum(Long id) {
+        return VideoMapper.updateLikeNum(id);
+    }
+
+    @Override
+    public int updatePlayNum(Long id) {
+        return VideoMapper.updatePlayNum(id);
+    }
+
+
 }

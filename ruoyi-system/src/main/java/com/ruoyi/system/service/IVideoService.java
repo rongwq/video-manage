@@ -60,4 +60,18 @@ public interface IVideoService
      * @return 结果
      */
     public int deleteVideoById(Long id);
+
+    /**
+     * 点赞量加一
+     * @param id
+     * @return
+     */
+    int updateLikeNum(Long id);
+
+    /**
+     * 播放量加一
+     * @param id
+     * @return
+     */
+    int updatePlayNum(Long id);
 }

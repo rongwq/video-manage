@@ -60,4 +60,18 @@ public interface VideoMapper
     public int deleteVideoByIds(Long[] ids);
 
     List<Video> selectVideoListByCategoryId(Long categoryId);
+
+    /**
+     * 点赞量加一
+     * @param id
+     * @return
+     */
+    int updateLikeNum(Long id);
+
+    /**
+     * 播放量加一
+     * @param id
+     * @return
+     */
+    int updatePlayNum(Long id);
 }

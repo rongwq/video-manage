@@ -17,10 +17,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="createTime"    column="create_time"    />
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
+        <result property="likeNum"    column="like_num"    />
+        <result property="playNum"    column="play_num"    />
     </resultMap>
 
     <sql id="selectVideoVo">
-        select id, img, url, title, category, status, remark, type, create_by, create_time, update_by, update_time from v_video
+        select id, img, url, title, category, status, remark, type, create_by, create_time, update_by, update_time, like_num, play_num from v_video
     </sql>
 
     <select id="selectVideoList" parameterType="Video" resultMap="VideoResult">
@@ -105,4 +107,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         order by create_time desc
         limit 6
     </select>
+
+    <update id="updateLikeNum">
+        update v_video set like_num = like_num + 1
+        where id = #{id}
+    </update>
+
+    <update id="updatePlayNum">
+        update v_video set play_num = play_num + 1
+        where id = #{id}
+    </update>
 </mapper>

@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="视频ID" prop="vedioId">
+      <el-form-item label="视频ID" prop="videoId">
         <el-input
-          v-model="queryParams.vedioId"
+          v-model="queryParams.videoId"
           placeholder="请输入视频ID"
           clearable
           @keyup.enter.native="handleQuery"
@@ -72,7 +72,7 @@
     <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="视频ID" align="center" prop="vedioId" />
+      <el-table-column label="视频ID" align="center" prop="videoId" />
       <el-table-column label="用户ID" align="center" prop="userId" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -105,8 +105,8 @@
     <!-- 添加或修改用户收藏记录对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="视频ID" prop="vedioId">
-          <el-input v-model="form.vedioId" placeholder="请输入视频ID" />
+        <el-form-item label="视频ID" prop="videoId">
+          <el-input v-model="form.videoId" placeholder="请输入视频ID" />
         </el-form-item>
         <el-form-item label="用户ID" prop="userId">
           <el-input v-model="form.userId" placeholder="请输入用户ID" />
@@ -149,7 +149,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        vedioId: null,
+        videoId: null,
         userId: null,
       },
       // 表单参数
@@ -181,7 +181,7 @@ export default {
     reset() {
       this.form = {
         id: null,
-        vedioId: null,
+        videoId: null,
         userId: null,
         createBy: null,
         createTime: null,

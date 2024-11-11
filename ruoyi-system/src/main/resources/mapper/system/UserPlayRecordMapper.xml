@@ -6,7 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <resultMap type="UserPlayRecord" id="UserPlayRecordResult">
         <result property="id"    column="id"    />
-        <result property="vedioId"    column="vedio_id"    />
+        <result property="videoId"    column="video_id"    />
         <result property="userId"    column="user_id"    />
         <result property="createBy"    column="create_by"    />
         <result property="createTime"    column="create_time"    />
@@ -15,13 +15,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectUserPlayRecordVo">
-        select id, vedio_id, user_id, create_by, create_time, update_by, update_time from v_user_play_record
+        select id, video_id, user_id, create_by, create_time, update_by, update_time from v_user_play_record
     </sql>
 
     <select id="selectUserPlayRecordList" parameterType="UserPlayRecord" resultMap="UserPlayRecordResult">
         <include refid="selectUserPlayRecordVo"/>
         <where>  
-            <if test="vedioId != null "> and vedio_id = #{vedioId}</if>
+            <if test="videoId != null "> and video_id = #{videoId}</if>
             <if test="userId != null "> and user_id = #{userId}</if>
         </where>
     </select>
@@ -34,7 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertUserPlayRecord" parameterType="UserPlayRecord" useGeneratedKeys="true" keyProperty="id">
         insert into v_user_play_record
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="vedioId != null">vedio_id,</if>
+            <if test="videoId != null">video_id,</if>
             <if test="userId != null">user_id,</if>
             <if test="createBy != null">create_by,</if>
             <if test="createTime != null">create_time,</if>
@@ -42,7 +42,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">update_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="vedioId != null">#{vedioId},</if>
+            <if test="videoId != null">#{videoId},</if>
             <if test="userId != null">#{userId},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
@@ -54,7 +54,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateUserPlayRecord" parameterType="UserPlayRecord">
         update v_user_play_record
         <trim prefix="SET" suffixOverrides=",">
-            <if test="vedioId != null">vedio_id = #{vedioId},</if>
+            <if test="videoId != null">video_id = #{videoId},</if>
             <if test="userId != null">user_id = #{userId},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
