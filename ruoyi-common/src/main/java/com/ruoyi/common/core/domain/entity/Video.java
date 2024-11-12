@@ -1,9 +1,8 @@
 package com.ruoyi.common.core.domain.entity;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import lombok.Data;
 
 import java.util.List;
 
@@ -13,6 +12,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2024-10-13
  */
+@Data
 public class Video extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
@@ -46,91 +46,11 @@ public class Video extends BaseEntity
     /** 广告列表 */
     private List<VideoAd> adList;
 
-    public void setId(Long id) 
-    {
-        this.id = id;
-    }
+    /** 点赞量 */
+    private Integer likeNum;
 
-    public Long getId() 
-    {
-        return id;
-    }
-    public void setUrl(String url) 
-    {
-        this.url = url;
-    }
+    /** 播放量 */
+    private Integer playNum;
 
-    public String getUrl() 
-    {
-        return url;
-    }
-    public void setTitle(String title) 
-    {
-        this.title = title;
-    }
 
-    public String getTitle() 
-    {
-        return title;
-    }
-    public void setCategory(String category) 
-    {
-        this.category = category;
-    }
-
-    public String getCategory() 
-    {
-        return category;
-    }
-    public void setStatus(String status) 
-    {
-        this.status = status;
-    }
-
-    public String getStatus() 
-    {
-        return status;
-    }
-    public void setType(String type) 
-    {
-        this.type = type;
-    }
-
-    public String getType() 
-    {
-        return type;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("url", getUrl())
-            .append("title", getTitle())
-            .append("category", getCategory())
-            .append("status", getStatus())
-            .append("remark", getRemark())
-            .append("type", getType())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .append("updateBy", getUpdateBy())
-            .append("updateTime", getUpdateTime())
-            .toString();
-    }
-
-    public String getImg() {
-        return img;
-    }
-
-    public void setImg(String img) {
-        this.img = img;
-    }
-
-    public List<VideoAd> getAdList() {
-        return adList;
-    }
-
-    public void setAdList(List<VideoAd> adList) {
-        this.adList = adList;
-    }
 }

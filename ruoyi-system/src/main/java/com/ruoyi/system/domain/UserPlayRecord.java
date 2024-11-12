@@ -30,4 +30,9 @@ public class UserPlayRecord extends BaseEntity {
      */
     @Excel(name = "用户ID")
     private Long userId;
+
+    //非数据库字段
+    private String videoTitle;
+
+    private String videoImg;
 }

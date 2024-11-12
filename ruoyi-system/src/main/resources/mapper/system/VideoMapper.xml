@@ -36,6 +36,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
         order by create_time desc
     </select>
+
+    <select id="selectRecommendList" parameterType="Video" resultMap="VideoResult">
+        <include refid="selectVideoVo"/>
+        <where>
+            <if test="category != null  and category != ''"> and (category = #{category} or category like concat(#{category},',%') or category like concat('%,',#{category}) or category like concat('%,',#{category},',%'))</if>
+            <if test="id != null"> and id != #{id}</if>
+        </where>
+        order by play_num desc
+        limit 6
+    </select>
     
     <select id="selectVideoById" parameterType="Long" resultMap="VideoResult">
         <include refid="selectVideoVo"/>

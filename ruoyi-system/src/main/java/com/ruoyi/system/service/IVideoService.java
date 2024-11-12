@@ -27,6 +27,8 @@ public interface IVideoService
      */
     public List<Video> selectVideoList(Video video);
 
+    List<Video> selectRecommendList(Video video);
+
     List<Video> selectVideoListByCategoryId(Long categoryId);
 
     /**

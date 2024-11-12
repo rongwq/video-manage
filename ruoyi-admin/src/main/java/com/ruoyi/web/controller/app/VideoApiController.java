@@ -50,11 +50,16 @@ public class VideoApiController extends BaseController {
     public TableDataInfo list(Video video) {
         startPage();
         List<Video> list = videoService.selectVideoList(video);
-        VideoAd videoAd = new VideoAd();
-        list.forEach(i -> {
-            videoAd.setVideoId(i.getId());
-            i.setAdList(videoAdService.selectVideoAdList(videoAd));
-        });
+        return getDataTable(list);
+    }
+
+    /**
+     * 推荐视频
+     */
+    @GetMapping("/list/recommend")
+    @Anonymous
+    public TableDataInfo recommendList(Video video) {
+        List<Video> list = videoService.selectRecommendList(video);
         return getDataTable(list);
     }
 
@@ -64,7 +69,11 @@ public class VideoApiController extends BaseController {
     @GetMapping(value = "/{id}")
     @Anonymous
     public AjaxResult getInfo(@PathVariable("id") Long id) {
-        return success(videoService.selectVideoById(id));
+        Video video = videoService.selectVideoById(id);
+        VideoAd videoAd = new VideoAd();
+        videoAd.setVideoId(id);
+        video.setAdList(videoAdService.selectVideoAdList(videoAd));
+        return success(video);
     }
 
     /**
@@ -98,7 +107,7 @@ public class VideoApiController extends BaseController {
     /**
      * 用户点赞
      */
-    @PostMapping
+    @PostMapping("/saveLike")
     @Transactional(rollbackFor = Exception.class)
     public AjaxResult saveLike(@RequestParam Long videoId) {
         //点赞量+1
@@ -112,7 +121,7 @@ public class VideoApiController extends BaseController {
     /**
      * 用户收藏
      */
-    @PostMapping
+    @PostMapping("/saveCollect")
     public AjaxResult saveCollect(@RequestParam Long videoId) {
         UserCollectRecord userCollectRecord = new UserCollectRecord();
         userCollectRecord.setUserId(getUserId());
@@ -123,7 +132,7 @@ public class VideoApiController extends BaseController {
     /**
      * 用户播放
      */
-    @PostMapping
+    @PostMapping("/savePlay")
     @Transactional(rollbackFor = Exception.class)
     public R savePlay(@RequestParam Long videoId) {
         //检查视频类型

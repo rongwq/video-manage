@@ -28,6 +28,13 @@ public interface VideoMapper
     public List<Video> selectVideoList(Video video);
 
     /**
+     * 推荐视频
+     * @param video
+     * @return
+     */
+    List<Video> selectRecommendList(Video video);
+
+    /**
      * 新增视频
      * 
      * @param video 视频
