@@ -19,6 +19,8 @@ public interface RechargeKeyMapper
      */
     public RechargeKey selectRechargeKeyById(Long id);
 
+    public RechargeKey selectRechargeKeyByCode(String code);
+
     /**
      * 查询充值卡列表
      * 

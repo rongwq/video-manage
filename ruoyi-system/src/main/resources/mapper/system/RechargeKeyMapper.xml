@@ -35,6 +35,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
 
+    <select id="selectRechargeKeyByCode" parameterType="String" resultMap="RechargeKeyResult">
+        <include refid="selectRechargeKeyVo"/>
+        where code = #{code}
+    </select>
+
     <insert id="insertRechargeKey" parameterType="RechargeKey" useGeneratedKeys="true" keyProperty="id">
         insert into v_recharge_key
         <trim prefix="(" suffix=")" suffixOverrides=",">

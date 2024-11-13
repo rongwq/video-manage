@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserIntegralRecordMapper">
+    
+    <resultMap type="UserIntegralRecord" id="UserIntegralRecordResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="recordId"    column="record_id"    />
+        <result property="integral"    column="integral"    />
+        <result property="integralBefore"    column="integral_before"    />
+        <result property="integralAfter"    column="integral_after"    />
+        <result property="type"    column="type"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectUserIntegralRecordVo">
+        select id, user_id, record_id, integral, integral_before, integral_after, type, create_by, create_time, update_by, update_time, remark from v_user_integral_record
+    </sql>
+
+    <select id="selectUserIntegralRecordList" parameterType="UserIntegralRecord" resultMap="UserIntegralRecordResult">
+        <include refid="selectUserIntegralRecordVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userName != null "> and user_id in (SELECT user_id FROM sys_user WHERE user_name like concat('%',#{userName},'%'))</if>
+            <if test="recordId != null "> and record_id = #{recordId}</if>
+            <if test="integral != null "> and integral = #{integral}</if>
+            <if test="integralBefore != null "> and integral_before = #{integralBefore}</if>
+            <if test="integralAfter != null "> and integral_after = #{integralAfter}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+        </where>
+        order by id desc
+    </select>
+    
+    <select id="selectUserIntegralRecordById" parameterType="Long" resultMap="UserIntegralRecordResult">
+        <include refid="selectUserIntegralRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertUserIntegralRecord" parameterType="UserIntegralRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into v_user_integral_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="recordId != null">record_id,</if>
+            <if test="integral != null">integral,</if>
+            <if test="integralBefore != null">integral_before,</if>
+            <if test="integralAfter != null">integral_after,</if>
+            <if test="type != null">type,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="recordId != null">#{recordId},</if>
+            <if test="integral != null">#{integral},</if>
+            <if test="integralBefore != null">#{integralBefore},</if>
+            <if test="integralAfter != null">#{integralAfter},</if>
+            <if test="type != null">#{type},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserIntegralRecord" parameterType="UserIntegralRecord">
+        update v_user_integral_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="recordId != null">record_id = #{recordId},</if>
+            <if test="integral != null">integral = #{integral},</if>
+            <if test="integralBefore != null">integral_before = #{integralBefore},</if>
+            <if test="integralAfter != null">integral_after = #{integralAfter},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserIntegralRecordById" parameterType="Long">
+        delete from v_user_integral_record where id = #{id}
+    </delete>
+
+    <delete id="deleteUserIntegralRecordByIds" parameterType="String">
+        delete from v_user_integral_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
