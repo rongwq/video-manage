@@ -29,7 +29,7 @@ public class UserCollectRecord extends BaseEntity
     private Long userId;
 
     //非数据库字段
-    private String videoName;
+    private String videoTitle;
 
     private String videoImg;
 }
