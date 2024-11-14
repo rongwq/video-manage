@@ -119,6 +119,24 @@ public class VideoApiController extends BaseController {
     }
 
     /**
+     * 用户取消点赞
+     */
+    @PostMapping("/cancelLike")
+    @Transactional(rollbackFor = Exception.class)
+    public AjaxResult cancelLike(@RequestParam Long videoId) {
+        UserLikeRecord userLikeRecord = new UserLikeRecord();
+        userLikeRecord.setUserId(getUserId());
+        userLikeRecord.setVideoId(videoId);
+        List<UserLikeRecord> userLikeRecords = userLikeRecordService.selectUserLikeRecordList(userLikeRecord);
+        if(userLikeRecords.isEmpty()){
+            return AjaxResult.warn("用户已取消点赞");
+        }
+        //点赞量-1
+        videoService.cancelLikeNum(videoId);
+        return toAjax(userLikeRecordService.deleteUserLikeRecordById(userLikeRecords.get(0).getId()));
+    }
+
+    /**
      * 用户收藏
      */
     @PostMapping("/saveCollect")
@@ -127,6 +145,21 @@ public class VideoApiController extends BaseController {
         userCollectRecord.setUserId(getUserId());
         userCollectRecord.setVideoId(videoId);
         return toAjax(userCollectRecordService.insertUserCollectRecord(userCollectRecord));
+    }
+
+    /**
+     * 用户取消收藏
+     */
+    @PostMapping("/cancelCollect")
+    public AjaxResult cancelCollect(@RequestParam Long videoId) {
+        UserCollectRecord userCollectRecord = new UserCollectRecord();
+        userCollectRecord.setUserId(getUserId());
+        userCollectRecord.setVideoId(videoId);
+        List<UserCollectRecord> list = userCollectRecordService.selectUserCollectRecordList(userCollectRecord);
+        if(list.isEmpty()){
+            return AjaxResult.warn("用户已取消收藏");
+        }
+        return toAjax(userCollectRecordService.deleteUserCollectRecordById(list.get(0).getId()));
     }
 
     /**

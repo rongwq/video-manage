@@ -70,6 +70,8 @@ public interface IVideoService
      */
     int updateLikeNum(Long id);
 
+    int cancelLikeNum(Long id);
+
     /**
      * 播放量加一
      * @param id

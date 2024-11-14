@@ -123,6 +123,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </update>
 
+    <update id="cancelLikeNum">
+        update v_video set like_num = like_num - 1
+        where id = #{id}
+    </update>
+
     <update id="updatePlayNum">
         update v_video set play_num = play_num + 1
         where id = #{id}

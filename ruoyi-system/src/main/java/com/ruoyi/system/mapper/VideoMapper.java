@@ -76,6 +76,13 @@ public interface VideoMapper
     int updateLikeNum(Long id);
 
     /**
+     * 点赞量减一
+     * @param id
+     * @return
+     */
+    int cancelLikeNum(Long id);
+
+    /**
      * 播放量加一
      * @param id
      * @return

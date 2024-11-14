@@ -110,6 +110,11 @@ public class VideoServiceImpl implements IVideoService
     }
 
     @Override
+    public int cancelLikeNum(Long id) {
+        return VideoMapper.cancelLikeNum(id);
+    }
+
+    @Override
     public int updatePlayNum(Long id) {
         return VideoMapper.updatePlayNum(id);
     }

@@ -22,7 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectUserPlayRecordList" parameterType="UserPlayRecord" resultMap="UserPlayRecordResult">
         select v.id, v.video_id, v.user_id, v.create_by, v.create_time, v.update_by, v.update_time,
-        vi.title as videoTitle, vi.img as videoImg
+        vi.title as video_title, vi.img as video_img
         from v_user_play_record v left join v_video vi on vi.id = v.video_id
         <where>  
             <if test="userId != null "> and v.user_id = #{userId}</if>
