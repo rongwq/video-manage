@@ -52,5 +52,12 @@ public class Video extends BaseEntity
     /** 播放量 */
     private Integer playNum;
 
+    /** 是否点赞 */
+    private Boolean like;
+
+    /** 是否收藏 */
+    private Boolean collect;
+
+
 
 }

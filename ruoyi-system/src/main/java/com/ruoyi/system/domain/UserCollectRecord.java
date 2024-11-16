@@ -32,4 +32,6 @@ public class UserCollectRecord extends BaseEntity
     private String videoTitle;
 
     private String videoImg;
+
+    private String videoType;
 }

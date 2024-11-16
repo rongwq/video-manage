@@ -68,11 +68,33 @@ public class VideoApiController extends BaseController {
      */
     @GetMapping(value = "/{id}")
     @Anonymous
-    public AjaxResult getInfo(@PathVariable("id") Long id) {
+    public AjaxResult getInfo(@PathVariable("id") Long id, @RequestParam(value = "userId", required = false) Long userId) {
         Video video = videoService.selectVideoById(id);
         VideoAd videoAd = new VideoAd();
         videoAd.setVideoId(id);
         video.setAdList(videoAdService.selectVideoAdList(videoAd));
+        if (userId != null) {
+            //查询用户点赞和收藏信息
+            UserLikeRecord userLikeRecord = new UserLikeRecord();
+            userLikeRecord.setUserId(userId);
+            userLikeRecord.setVideoId(id);
+            List<UserLikeRecord> userLikeRecords = userLikeRecordService.selectUserLikeRecordList(userLikeRecord);
+            if (!userLikeRecords.isEmpty()) {
+                video.setLike(true);
+            }else{
+                video.setLike(false);
+            }
+            //查询用户收藏信息
+            UserCollectRecord userCollectRecord = new UserCollectRecord();
+            userCollectRecord.setUserId(userId);
+            userCollectRecord.setVideoId(id);
+            List<UserCollectRecord> userCollectRecords = userCollectRecordService.selectUserCollectRecordList(userCollectRecord);
+            if (!userCollectRecords.isEmpty()) {
+                video.setCollect(true);
+            }else{
+                video.setLike(false);
+            }
+        }
         return success(video);
     }
 
@@ -128,7 +150,7 @@ public class VideoApiController extends BaseController {
         userLikeRecord.setUserId(getUserId());
         userLikeRecord.setVideoId(videoId);
         List<UserLikeRecord> userLikeRecords = userLikeRecordService.selectUserLikeRecordList(userLikeRecord);
-        if(userLikeRecords.isEmpty()){
+        if (userLikeRecords.isEmpty()) {
             return AjaxResult.warn("用户已取消点赞");
         }
         //点赞量-1
@@ -156,7 +178,7 @@ public class VideoApiController extends BaseController {
         userCollectRecord.setUserId(getUserId());
         userCollectRecord.setVideoId(videoId);
         List<UserCollectRecord> list = userCollectRecordService.selectUserCollectRecordList(userCollectRecord);
-        if(list.isEmpty()){
+        if (list.isEmpty()) {
             return AjaxResult.warn("用户已取消收藏");
         }
         return toAjax(userCollectRecordService.deleteUserCollectRecordById(list.get(0).getId()));
@@ -170,11 +192,11 @@ public class VideoApiController extends BaseController {
     public R savePlay(@RequestParam Long videoId) {
         //检查视频类型
         Video video = videoService.selectVideoById(videoId);
-        if(video==null){
+        if (video == null) {
             return R.fail("视频不存在");
         }
         //如果视频为购买类型，则需要校验是否购买，未购买则返回错误
-        if(VideoType.BUY.getCode().equals(video.getType())) {
+        if (VideoType.BUY.getCode().equals(video.getType())) {
             return R.fail("视频未购买");
         }
         //播放量+1
