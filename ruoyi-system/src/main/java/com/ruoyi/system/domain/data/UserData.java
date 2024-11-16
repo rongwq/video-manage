@@ -2,7 +2,7 @@ package com.ruoyi.system.domain.data;
 
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.xss.Xss;
-import com.ruoyi.system.domain.SysUserExt;
+import com.ruoyi.common.core.domain.entity.SysUserExt;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

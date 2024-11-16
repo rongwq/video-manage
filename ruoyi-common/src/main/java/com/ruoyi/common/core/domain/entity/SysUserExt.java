@@ -1,4 +1,4 @@
-package com.ruoyi.system.domain;
+package com.ruoyi.common.core.domain.entity;
 
 import com.ruoyi.common.annotation.Excel;
 import lombok.Data;

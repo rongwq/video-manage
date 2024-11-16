@@ -22,6 +22,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="createTime"   column="create_time"  />
         <result property="updateBy"     column="update_by"    />
         <result property="updateTime"   column="update_time"  />
+		<result property="integral"      column="integral"    />
+		<result property="shopUrl"      column="shop_url"    />
         <result property="remark"       column="remark"       />
         <association property="dept"    javaType="SysDept"         resultMap="deptResult" />
         <collection  property="roles"   javaType="java.util.List"  resultMap="RoleResult" />
@@ -57,8 +59,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </sql>
     
     <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult">
-		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, d.dept_name, d.leader from sys_user u
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, d.dept_name, d.leader
+		,ue.integral,ue.shop_url,ue.puser_id,ue.get_article_time
+		from sys_user u
 		left join sys_dept d on u.dept_id = d.dept_id
+		inner join sys_user_ext ue on u.user_id = ue.user_id
 		where u.del_flag = '0'
 		<if test="userId != null and userId != 0">
 			AND u.user_id = #{userId}
@@ -80,6 +85,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 		<if test="deptId != null and deptId != 0">
 			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		<if test="startIntegral != null and startIntegral != 0">
+			AND ue.integral >= #{startIntegral}
+		</if>
+		<if test="endIntegral != null and endIntegral != 0">
+			AND ue.integral &lt;= #{endIntegral}
 		</if>
 		<!-- 数据范围过滤 -->
 		${params.dataScope}

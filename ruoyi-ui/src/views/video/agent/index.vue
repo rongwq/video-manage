@@ -35,6 +35,13 @@
           />
         </el-select>
       </el-form-item>
+
+      <el-form-item label="积分" prop="startIntegral">
+        <el-input-number v-model="queryParams.startIntegral" placeholder="积分"></el-input-number>
+        -
+        <el-input-number v-model="queryParams.endIntegral" placeholder="积分"></el-input-number>
+      </el-form-item>
+
       <el-form-item label="创建时间">
         <el-date-picker
           v-model="dateRange"
@@ -47,7 +54,7 @@
         ></el-date-picker>
       </el-form-item>
 
-n'p'm      <el-form-item>
+     <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
@@ -75,6 +82,10 @@ n'p'm      <el-form-item>
       <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName"
                        :show-overflow-tooltip="true"/>
       <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber"
+                       width="120"/>
+      <el-table-column label="积分" align="center" key="integral" prop="integral"
+                       width="120"/>
+      <el-table-column label="店铺" align="center" key="shopUrl" prop="shopUrl"
                        width="120"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="160">
         <template slot-scope="scope">
@@ -187,6 +198,13 @@ n'p'm      <el-form-item>
           <el-col :span="12">
             <el-form-item label="代理id" prop="puserId">
               <el-input disabled v-model="form.puserId" placeholder="" maxlength="30"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="店铺地址">
+              <el-input disabled v-model="form.shopUrl" placeholder=""></el-input>
             </el-form-item>
           </el-col>
         </el-row>

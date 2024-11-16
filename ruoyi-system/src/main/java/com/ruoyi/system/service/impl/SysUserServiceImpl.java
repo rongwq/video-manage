@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Validator;
 
-import com.ruoyi.system.domain.SysUserExt;
+import com.ruoyi.common.core.domain.entity.SysUserExt;
 import com.ruoyi.system.mapper.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -266,6 +266,7 @@ public class SysUserServiceImpl implements ISysUserService
         //新增用户扩展信息
         SysUserExt sysUserExt = new SysUserExt();
         sysUserExt.setUserId(user.getUserId());
+        sysUserExt.setShopUrl(user.getShopUrl());
         userExtMapper.insertSysUserExt(sysUserExt);
         // 新增用户岗位关联
         insertUserPost(user);
@@ -305,6 +306,9 @@ public class SysUserServiceImpl implements ISysUserService
         userPostMapper.deleteUserPostByUserId(userId);
         // 新增用户与岗位管理
         insertUserPost(user);
+        SysUserExt sysUserExt = userExtMapper.selectSysUserExtByUserId(userId);
+        sysUserExt.setShopUrl(user.getShopUrl());
+        userExtMapper.updateSysUserExt(sysUserExt);
         return userMapper.updateUser(user);
     }
 

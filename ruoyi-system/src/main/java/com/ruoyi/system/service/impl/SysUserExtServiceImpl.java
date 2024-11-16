@@ -1,6 +1,6 @@
 package com.ruoyi.system.service.impl;
 
-import com.ruoyi.system.domain.SysUserExt;
+import com.ruoyi.common.core.domain.entity.SysUserExt;
 import com.ruoyi.system.mapper.SysUserExtMapper;
 import com.ruoyi.system.service.ISysUserExtService;
 import org.springframework.beans.factory.annotation.Autowired;

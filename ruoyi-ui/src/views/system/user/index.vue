@@ -296,6 +296,13 @@
         </el-row>
         <el-row>
           <el-col :span="24">
+            <el-form-item label="店铺地址" prop="shopUrl">
+              <el-input v-model="form.shopUrl" placeholder="请输入店铺地址" maxlength="30" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
             <el-form-item label="备注">
               <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
             </el-form-item>
@@ -523,7 +530,7 @@ export default {
         status: "0",
         remark: undefined,
         postIds: [],
-        roleIds: []
+        roleIds: [],
       };
       this.resetForm("form");
     },

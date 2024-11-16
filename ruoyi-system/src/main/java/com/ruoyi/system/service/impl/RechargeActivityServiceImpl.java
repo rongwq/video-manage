@@ -9,7 +9,7 @@ import com.ruoyi.common.enums.IntegralType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.system.domain.RechargeKey;
-import com.ruoyi.system.domain.SysUserExt;
+import com.ruoyi.common.core.domain.entity.SysUserExt;
 import com.ruoyi.system.domain.UserIntegralRecord;
 import com.ruoyi.system.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;

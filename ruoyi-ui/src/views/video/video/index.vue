@@ -86,6 +86,8 @@
         </template>
       </el-table-column>
       <el-table-column label="视频标题" align="center" prop="title"/>
+      <el-table-column label="播放量" align="center" prop="playNum"/>
+      <el-table-column label="点赞量" align="center" prop="likeNum"/>
       <el-table-column label="描述" align="center" prop="remark"/>
       <el-table-column label="视频类型" align="center" prop="type">
         <template slot-scope="scope">
@@ -174,6 +176,12 @@
         </el-form-item>
         <el-form-item label="视频标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入视频标题"/>
+        </el-form-item>
+        <el-form-item label="播放量" prop="playNum">
+          <el-input v-model="form.playNum" placeholder="播放量"/>
+        </el-form-item>
+        <el-form-item label="点赞量" prop="likeNum">
+          <el-input v-model="form.likeNum" placeholder="点赞量"/>
         </el-form-item>
         <el-form-item label="描述" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入描述"/>

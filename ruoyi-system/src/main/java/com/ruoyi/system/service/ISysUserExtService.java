@@ -1,6 +1,6 @@
 package com.ruoyi.system.service;
 
-import com.ruoyi.system.domain.SysUserExt;
+import com.ruoyi.common.core.domain.entity.SysUserExt;
 
 import java.util.List;
 
