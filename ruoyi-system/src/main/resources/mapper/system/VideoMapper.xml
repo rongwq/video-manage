@@ -19,10 +19,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
         <result property="likeNum"    column="like_num"    />
         <result property="playNum"    column="play_num"    />
+        <result property="money"    column="money"    />
     </resultMap>
 
     <sql id="selectVideoVo">
-        select id, img, url, title, category, status, remark, type, create_by, create_time, update_by, update_time, like_num, play_num from v_video
+        select id, img, url, title, category, status, remark, type, create_by, create_time, update_by, update_time, like_num, play_num, money from v_video
     </sql>
 
     <select id="selectVideoList" parameterType="Video" resultMap="VideoResult">

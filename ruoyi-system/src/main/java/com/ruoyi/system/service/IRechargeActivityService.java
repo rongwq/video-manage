@@ -70,12 +70,4 @@ public interface IRechargeActivityService
      */
     boolean recharge(RechargeKey rechargeKey);
 
-    /**
-     * 保存流水
-     * @param userId
-     * @param recordId
-     * @param integral
-     * @param type
-     */
-    void saveUserIntegralRecord(Long userId, Long recordId, Integer integral, IntegralType type,String remark);
 }

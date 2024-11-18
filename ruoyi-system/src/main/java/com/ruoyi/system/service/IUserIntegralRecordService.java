@@ -1,5 +1,6 @@
 package com.ruoyi.system.service;
 
+import com.ruoyi.common.enums.IntegralType;
 import com.ruoyi.system.domain.UserIntegralRecord;
 
 import java.util.List;
@@ -59,4 +60,15 @@ public interface IUserIntegralRecordService
      * @return 结果
      */
     public int deleteUserIntegralRecordById(Long id);
+
+    /**
+     * 保存流水
+     * @param userId
+     * @param recordId
+     * @param integral
+     * @param type
+     */
+    void saveUserIntegralRecord(Long userId, Long recordId, Integer integral, IntegralType type, String remark);
+
+
 }

@@ -12,6 +12,7 @@ import com.ruoyi.system.domain.RechargeKey;
 import com.ruoyi.common.core.domain.entity.SysUserExt;
 import com.ruoyi.system.domain.UserIntegralRecord;
 import com.ruoyi.system.mapper.*;
+import com.ruoyi.system.service.IUserIntegralRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.domain.RechargeActivity;
@@ -32,11 +33,11 @@ public class RechargeActivityServiceImpl implements IRechargeActivityService
     @Autowired
     private RechargeKeyMapper rechargeKeyMapper;
     @Autowired
-    private UserIntegralRecordMapper userIntegralRecordMapper;
-    @Autowired
     private SysUserMapper sysUserMapper;
     @Autowired
     private SysUserExtMapper sysUserExtMapper;
+    @Autowired
+    private IUserIntegralRecordService userIntegralRecordService;
 
     /**
      * 查询充值活动
@@ -129,36 +130,7 @@ public class RechargeActivityServiceImpl implements IRechargeActivityService
         //更新充值卡信息
         rechargeKeyMapper.updateRechargeKey(queryResult);
         //保存流水
-        saveUserIntegralRecord(rechargeKey.getUserId(),queryResult.getId(),queryResult.getMoney().intValue(),IntegralType.RECHARGE,"充值卡激活");
+        userIntegralRecordService.saveUserIntegralRecord(rechargeKey.getUserId(),queryResult.getId(),queryResult.getMoney().intValue(),IntegralType.RECHARGE,"充值卡激活");
         return true;
-    }
-
-    /**
-     * 保存流水
-     * @param userId
-     * @param recordId
-     * @param integral
-     */
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void saveUserIntegralRecord(Long userId, Long recordId, Integer integral, IntegralType type,String remark) {
-        //增加用户积分
-        SysUserExt userExt = sysUserExtMapper.selectSysUserExtByUserId(userId);
-        if(userExt==null){
-            throw new ServiceException("用户信息异常");
-        }
-        userExt.setIntegral(userExt.getIntegral()+integral);
-        sysUserExtMapper.updateSysUserExt(userExt);
-        //保存流水
-        UserIntegralRecord userIntegralRecord = new UserIntegralRecord();
-        userIntegralRecord.setType(type.getCode());
-        userIntegralRecord.setIntegral(BigDecimal.valueOf(integral));
-        userIntegralRecord.setUserId(userId);
-        userIntegralRecord.setRecordId(recordId);
-        userIntegralRecord.setIntegralBefore(BigDecimal.valueOf(userExt.getIntegral()-integral));
-        userIntegralRecord.setIntegralAfter(BigDecimal.valueOf(userExt.getIntegral()));
-        userIntegralRecord.setRemark(remark);
-        userIntegralRecord.setCreateTime(new Date());
-        userIntegralRecordMapper.insertUserIntegralRecord(userIntegralRecord);
     }
 }

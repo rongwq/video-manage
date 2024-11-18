@@ -8,9 +8,11 @@ import com.ruoyi.common.core.domain.entity.Video;
 import com.ruoyi.common.core.domain.entity.VideoAd;
 import com.ruoyi.common.core.domain.entity.VideoCategory;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.enums.IntegralType;
 import com.ruoyi.common.enums.UserStatus;
 import com.ruoyi.common.enums.VideoType;
 import com.ruoyi.system.domain.UserCollectRecord;
+import com.ruoyi.system.domain.UserIntegralRecord;
 import com.ruoyi.system.domain.UserLikeRecord;
 import com.ruoyi.system.domain.UserPlayRecord;
 import com.ruoyi.system.service.*;
@@ -41,6 +43,8 @@ public class VideoApiController extends BaseController {
     private IUserCollectRecordService userCollectRecordService;
     @Autowired
     private IUserPlayRecordService userPlayRecordService;
+    @Autowired
+    private IUserIntegralRecordService userIntegralRecordService;
 
     /**
      * 查询视频列表-根据分类等其它条件
@@ -197,7 +201,15 @@ public class VideoApiController extends BaseController {
         }
         //如果视频为购买类型，则需要校验是否购买，未购买则返回错误
         if (VideoType.BUY.getCode().equals(video.getType())) {
-            return R.fail("视频未购买");
+            Long userId = getUserId();
+            UserIntegralRecord query = new UserIntegralRecord();
+            query.setUserId(userId);
+            query.setRecordId(videoId);
+            query.setType(IntegralType.BUY_VIDEO.getCode());
+            List<UserIntegralRecord> list = userIntegralRecordService.selectUserIntegralRecordList(query);
+            if (list.isEmpty()) {
+                return R.fail("视频未购买");
+            }
         }
         //播放量+1
         videoService.updatePlayNum(videoId);
@@ -206,5 +218,39 @@ public class VideoApiController extends BaseController {
         userPlayRecord.setVideoId(videoId);
         return R.ok(userPlayRecordService.insertUserPlayRecord(userPlayRecord));
     }
+
+    /**
+     * 用户购买视频
+     */
+    @PostMapping("/buyVideo")
+    @Transactional(rollbackFor = Exception.class)
+    public R buyVideo(@RequestParam Long videoId) {
+        //检查视频类型
+        Video video = videoService.selectVideoById(videoId);
+        if (video == null) {
+            return R.fail("视频不存在");
+        }
+        Long userId = getUserId();
+        //如果视频为购买类型，则需要校验是否购买，未购买则返回错误
+        if (VideoType.BUY.getCode().equals(video.getType())) {
+            UserIntegralRecord query = new UserIntegralRecord();
+            query.setUserId(userId);
+            query.setRecordId(videoId);
+            query.setType(IntegralType.BUY_VIDEO.getCode());
+            List<UserIntegralRecord> list = userIntegralRecordService.selectUserIntegralRecordList(query);
+            if (!list.isEmpty()) {
+                return R.fail("视频已购买");
+            }
+        }else{
+            return R.fail("视频无需购买");
+        }
+        if(video.getMoney()==null){
+            return R.fail("视频价格异常");
+        }
+        //保存流水+扣费
+        userIntegralRecordService.saveUserIntegralRecord(userId,videoId,0-video.getMoney(),IntegralType.BUY_VIDEO,"视频购买");
+        return R.ok();
+    }
+
 
 }
