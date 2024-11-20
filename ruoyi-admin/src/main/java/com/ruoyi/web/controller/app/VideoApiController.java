@@ -136,12 +136,18 @@ public class VideoApiController extends BaseController {
     @PostMapping("/saveLike")
     @Transactional(rollbackFor = Exception.class)
     public AjaxResult saveLike(@RequestParam Long videoId) {
+        //检查视频
+        Video video = videoService.selectVideoById(videoId);
+        if (video == null) {
+            return AjaxResult.warn("视频不存在");
+        }
         //点赞量+1
         videoService.updateLikeNum(videoId);
         UserLikeRecord userLikeRecord = new UserLikeRecord();
         userLikeRecord.setUserId(getUserId());
         userLikeRecord.setVideoId(videoId);
-        return toAjax(userLikeRecordService.insertUserLikeRecord(userLikeRecord));
+        userLikeRecordService.insertUserLikeRecord(userLikeRecord);
+        return toAjax(videoService.selectVideoById(videoId).getLikeNum());
     }
 
     /**
@@ -150,6 +156,11 @@ public class VideoApiController extends BaseController {
     @PostMapping("/cancelLike")
     @Transactional(rollbackFor = Exception.class)
     public AjaxResult cancelLike(@RequestParam Long videoId) {
+        //检查视频
+        Video video = videoService.selectVideoById(videoId);
+        if (video == null) {
+            return AjaxResult.warn("视频不存在");
+        }
         UserLikeRecord userLikeRecord = new UserLikeRecord();
         userLikeRecord.setUserId(getUserId());
         userLikeRecord.setVideoId(videoId);
@@ -159,7 +170,8 @@ public class VideoApiController extends BaseController {
         }
         //点赞量-1
         videoService.cancelLikeNum(videoId);
-        return toAjax(userLikeRecordService.deleteUserLikeRecordById(userLikeRecords.get(0).getId()));
+        userLikeRecordService.deleteUserLikeRecordById(userLikeRecords.get(0).getId());
+        return toAjax(videoService.selectVideoById(videoId).getLikeNum());
     }
 
     /**
@@ -194,7 +206,7 @@ public class VideoApiController extends BaseController {
     @PostMapping("/savePlay")
     @Transactional(rollbackFor = Exception.class)
     public R savePlay(@RequestParam Long videoId) {
-        //检查视频类型
+        //检查视频
         Video video = videoService.selectVideoById(videoId);
         if (video == null) {
             return R.fail("视频不存在");
@@ -216,7 +228,8 @@ public class VideoApiController extends BaseController {
         UserPlayRecord userPlayRecord = new UserPlayRecord();
         userPlayRecord.setUserId(getUserId());
         userPlayRecord.setVideoId(videoId);
-        return R.ok(userPlayRecordService.insertUserPlayRecord(userPlayRecord));
+        userPlayRecordService.insertUserPlayRecord(userPlayRecord);
+        return R.ok(videoService.selectVideoById(videoId).getPlayNum());
     }
 
     /**
