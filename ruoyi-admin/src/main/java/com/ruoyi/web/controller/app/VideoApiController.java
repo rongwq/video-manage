@@ -135,11 +135,18 @@ public class VideoApiController extends BaseController {
      */
     @PostMapping("/saveLike")
     @Transactional(rollbackFor = Exception.class)
-    public AjaxResult saveLike(@RequestParam Long videoId) {
+    public R saveLike(@RequestParam Long videoId) {
         //检查视频
         Video video = videoService.selectVideoById(videoId);
         if (video == null) {
-            return AjaxResult.warn("视频不存在");
+            return R.fail("视频不存在");
+        }
+        UserLikeRecord userLikeRecordQuery = new UserLikeRecord();
+        userLikeRecordQuery.setUserId(getUserId());
+        userLikeRecordQuery.setVideoId(videoId);
+        List<UserLikeRecord> userLikeRecords = userLikeRecordService.selectUserLikeRecordList(userLikeRecordQuery);
+        if (!userLikeRecords.isEmpty()) {
+            return R.fail("用户已点赞");
         }
         //点赞量+1
         videoService.updateLikeNum(videoId);
@@ -147,7 +154,7 @@ public class VideoApiController extends BaseController {
         userLikeRecord.setUserId(getUserId());
         userLikeRecord.setVideoId(videoId);
         userLikeRecordService.insertUserLikeRecord(userLikeRecord);
-        return toAjax(videoService.selectVideoById(videoId).getLikeNum());
+        return R.ok(videoService.selectVideoById(videoId).getLikeNum());
     }
 
     /**
@@ -155,49 +162,53 @@ public class VideoApiController extends BaseController {
      */
     @PostMapping("/cancelLike")
     @Transactional(rollbackFor = Exception.class)
-    public AjaxResult cancelLike(@RequestParam Long videoId) {
+    public R cancelLike(@RequestParam Long videoId) {
         //检查视频
         Video video = videoService.selectVideoById(videoId);
         if (video == null) {
-            return AjaxResult.warn("视频不存在");
+            return R.fail("视频不存在");
         }
         UserLikeRecord userLikeRecord = new UserLikeRecord();
         userLikeRecord.setUserId(getUserId());
         userLikeRecord.setVideoId(videoId);
         List<UserLikeRecord> userLikeRecords = userLikeRecordService.selectUserLikeRecordList(userLikeRecord);
         if (userLikeRecords.isEmpty()) {
-            return AjaxResult.warn("用户已取消点赞");
+            return R.fail("用户已取消点赞");
         }
         //点赞量-1
         videoService.cancelLikeNum(videoId);
         userLikeRecordService.deleteUserLikeRecordById(userLikeRecords.get(0).getId());
-        return toAjax(videoService.selectVideoById(videoId).getLikeNum());
+        return R.ok(videoService.selectVideoById(videoId).getLikeNum());
     }
 
     /**
      * 用户收藏
      */
     @PostMapping("/saveCollect")
-    public AjaxResult saveCollect(@RequestParam Long videoId) {
+    public R saveCollect(@RequestParam Long videoId) {
         UserCollectRecord userCollectRecord = new UserCollectRecord();
         userCollectRecord.setUserId(getUserId());
         userCollectRecord.setVideoId(videoId);
-        return toAjax(userCollectRecordService.insertUserCollectRecord(userCollectRecord));
+        List<UserCollectRecord> userCollectRecords = userCollectRecordService.selectUserCollectRecordList(userCollectRecord);
+        if (!userCollectRecords.isEmpty()) {
+            return R.fail("用户已收藏");
+        }
+        return R.ok(userCollectRecordService.insertUserCollectRecord(userCollectRecord));
     }
 
     /**
      * 用户取消收藏
      */
     @PostMapping("/cancelCollect")
-    public AjaxResult cancelCollect(@RequestParam Long videoId) {
+    public R cancelCollect(@RequestParam Long videoId) {
         UserCollectRecord userCollectRecord = new UserCollectRecord();
         userCollectRecord.setUserId(getUserId());
         userCollectRecord.setVideoId(videoId);
         List<UserCollectRecord> list = userCollectRecordService.selectUserCollectRecordList(userCollectRecord);
         if (list.isEmpty()) {
-            return AjaxResult.warn("用户已取消收藏");
+            return R.fail("用户已取消收藏");
         }
-        return toAjax(userCollectRecordService.deleteUserCollectRecordById(list.get(0).getId()));
+        return R.ok(userCollectRecordService.deleteUserCollectRecordById(list.get(0).getId()));
     }
 
     /**
