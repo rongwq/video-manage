@@ -28,13 +28,11 @@ public class ConfigApiController extends BaseController {
     @PostMapping("/getConfig")
     @Anonymous
     public R getConfig() {
-        String homeUrl = sysConfigService.selectConfigByKey("home_url");
-        String contactImg = sysConfigService.selectConfigByKey("contact.img");
-        String contactTxt = sysConfigService.selectConfigByKey("contact.txt");
         JSONObject js = new JSONObject();
-        js.put("homeUrl", homeUrl);
-        js.put("contactImg", contactImg);
-        js.put("contactTxt", contactTxt);
+        js.put("homeUrl", sysConfigService.selectConfigByKey("home_url"));
+        js.put("contactImg", sysConfigService.selectConfigByKey("contact.img"));
+        js.put("contactTxt", sysConfigService.selectConfigByKey("contact.txt"));
+        js.put("regTxt", sysConfigService.selectConfigByKey("reg.txt"));
         return R.ok(js);
     }
 
