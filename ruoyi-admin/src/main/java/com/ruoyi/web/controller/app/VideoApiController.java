@@ -4,6 +4,7 @@ import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.entity.SysUserExt;
 import com.ruoyi.common.core.domain.entity.Video;
 import com.ruoyi.common.core.domain.entity.VideoAd;
 import com.ruoyi.common.core.domain.entity.VideoCategory;
@@ -45,6 +46,8 @@ public class VideoApiController extends BaseController {
     private IUserPlayRecordService userPlayRecordService;
     @Autowired
     private IUserIntegralRecordService userIntegralRecordService;
+    @Autowired
+    private ISysUserExtService userExtService;
 
     /**
      * 查询视频列表-根据分类等其它条件
@@ -85,7 +88,7 @@ public class VideoApiController extends BaseController {
             List<UserLikeRecord> userLikeRecords = userLikeRecordService.selectUserLikeRecordList(userLikeRecord);
             if (!userLikeRecords.isEmpty()) {
                 video.setLike(true);
-            }else{
+            } else {
                 video.setLike(false);
             }
             //查询用户收藏信息
@@ -95,7 +98,7 @@ public class VideoApiController extends BaseController {
             List<UserCollectRecord> userCollectRecords = userCollectRecordService.selectUserCollectRecordList(userCollectRecord);
             if (!userCollectRecords.isEmpty()) {
                 video.setCollect(true);
-            }else{
+            } else {
                 video.setLike(false);
             }
         }
@@ -265,14 +268,19 @@ public class VideoApiController extends BaseController {
             if (!list.isEmpty()) {
                 return R.fail("视频已购买");
             }
-        }else{
+        } else {
             return R.fail("视频无需购买");
         }
-        if(video.getMoney()==null){
+        if (video.getMoney() == null) {
             return R.fail("视频价格异常");
         }
+        //检查用户余额是否足够
+        SysUserExt userExt = userExtService.selectSysUserExtByUserId(userId);
+        if (userExt != null && userExt.getIntegral().longValue() <= video.getMoney().longValue()) {
+            return R.fail("余额不足");
+        }
         //保存流水+扣费
-        userIntegralRecordService.saveUserIntegralRecord(userId,videoId,0-video.getMoney(),IntegralType.BUY_VIDEO,"视频购买");
+        userIntegralRecordService.saveUserIntegralRecord(userId, videoId, 0 - video.getMoney(), IntegralType.BUY_VIDEO, "视频购买");
         return R.ok();
     }
 

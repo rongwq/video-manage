@@ -43,6 +43,8 @@ public interface SysUserMapper
      */
     public SysUser selectUserByUserName(String userName);
 
+    SysUser selectUserByIp(String ip);
+
     /**
      * 通过用户ID查询用户
      * 

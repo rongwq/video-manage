@@ -12,10 +12,13 @@ import com.ruoyi.common.enums.CdkeyStatus;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
+import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.web.service.SysLoginService;
+import com.ruoyi.system.domain.AdUseRecord;
 import com.ruoyi.system.domain.Cdkey;
 import com.ruoyi.common.core.domain.entity.SysUserExt;
 import com.ruoyi.system.domain.data.UserData;
+import com.ruoyi.system.service.IAdUseRecordService;
 import com.ruoyi.system.service.ICdkeyService;
 import com.ruoyi.system.service.ISysUserExtService;
 import com.ruoyi.system.service.ISysUserService;
@@ -24,9 +27,11 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,6 +51,8 @@ public class UserApiController extends BaseController {
     private ICdkeyService CdkeyService;
     @Autowired
     private SysLoginService loginService;
+    @Autowired
+    private IAdUseRecordService adUseRecordService;
 
     @ApiOperation("获取用户详细")
     @ApiImplicitParam(name = "userName", value = "用户账号", required = true, dataType = "int", paramType = "path", dataTypeClass = Integer.class)
@@ -137,5 +144,26 @@ public class UserApiController extends BaseController {
         Map map = new HashMap<>();
         map.put(Constants.TOKEN, token);
         return R.ok(map);
+    }
+
+    /**
+     * 查询用户当天是否有点击过广告
+     *
+     * @param adId 广告id
+     * @return 结果
+     */
+    @GetMapping("/getAdUseResult")
+    @ApiOperation("查询用户当天是否有点击过广告")
+    @Anonymous
+    public R getAdUseResult(Long adId,Long userId) {
+        AdUseRecord adUseRecord = new AdUseRecord();
+        adUseRecord.setAdId(adId);
+        adUseRecord.setUserId(userId);
+        adUseRecord.setIp(IpUtils.getIpAddr());
+        List<AdUseRecord> list = adUseRecordService.selectAdUseRecordByIdAndUserId(adUseRecord);
+        if(CollectionUtils.isEmpty(list)){
+            return R.ok(false);
+        }
+        return R.ok(true);
     }
 }

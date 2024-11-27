@@ -15,10 +15,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="createTime"    column="create_time"    />
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
+        <result property="useNum"    column="use_num"    />
     </resultMap>
 
     <sql id="selectAdVo">
-        select id, url, title, status, remark, type, create_by, create_time, update_by, update_time from v_ad
+        select id, url, title, status, remark, type, create_by, create_time, update_by, update_time, use_num from v_ad
     </sql>
 
     <select id="selectAdList" parameterType="Ad" resultMap="AdResult">
@@ -74,6 +75,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="useNum != null">use_num = #{useNum},</if>
         </trim>
         where id = #{id}
     </update>
