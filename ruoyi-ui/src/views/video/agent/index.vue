@@ -85,7 +85,9 @@
                        width="120"/>
       <el-table-column label="积分" align="center" key="integral" prop="integral"
                        width="120"/>
-      <el-table-column label="店铺" align="center" key="shopUrl" prop="shopUrl"
+      <el-table-column label="充值码店铺" align="center" key="shopUrl" prop="shopUrl"
+                       width="120"/>
+      <el-table-column label="激活码店铺" align="center" key="cdKeyShopUrl" prop="cdKeyShopUrl"
                        width="120"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="160">
         <template slot-scope="scope">
@@ -203,8 +205,15 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="店铺地址">
+            <el-form-item label="充值码店铺地址">
               <el-input disabled v-model="form.shopUrl" placeholder=""></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="激活码店铺地址">
+              <el-input disabled v-model="form.cdKeyShopUrl" placeholder=""></el-input>
             </el-form-item>
           </el-col>
         </el-row>

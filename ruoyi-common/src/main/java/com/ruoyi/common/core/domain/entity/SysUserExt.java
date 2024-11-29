@@ -49,7 +49,10 @@ public class SysUserExt implements Serializable
     @Excel(name = "获取文章间隔时间")
     private Integer getArticleTime;
 
-    /** 店铺地址 */
+    /** 充值码店铺地址 */
     private String shopUrl;
+
+    /** 注册码店铺地址 */
+    private String cdKeyShopUrl;
 
 }

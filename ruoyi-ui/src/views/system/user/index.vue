@@ -296,8 +296,15 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="店铺地址" prop="shopUrl">
+            <el-form-item label="充值码店铺地址" prop="shopUrl">
               <el-input v-model="form.shopUrl" placeholder="请输入店铺地址" maxlength="30" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="激活码店铺地址" prop="cdKeyShopUrl">
+              <el-input v-model="form.cdKeyShopUrl" placeholder="请输入店铺地址" maxlength="30" />
             </el-form-item>
           </el-col>
         </el-row>

@@ -169,6 +169,7 @@ public class SysUser extends BaseEntity
 
     /** 店铺地址 */
     private String shopUrl;
+    private String cdKeyShopUrl;
 
     //查询条件
     private int startIntegral;

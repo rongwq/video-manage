@@ -273,6 +273,7 @@ public class SysUserServiceImpl implements ISysUserService
         SysUserExt sysUserExt = new SysUserExt();
         sysUserExt.setUserId(user.getUserId());
         sysUserExt.setShopUrl(user.getShopUrl());
+        sysUserExt.setCdKeyShopUrl(user.getCdKeyShopUrl());
         userExtMapper.insertSysUserExt(sysUserExt);
         // 新增用户岗位关联
         insertUserPost(user);
@@ -314,6 +315,7 @@ public class SysUserServiceImpl implements ISysUserService
         insertUserPost(user);
         SysUserExt sysUserExt = userExtMapper.selectSysUserExtByUserId(userId);
         sysUserExt.setShopUrl(user.getShopUrl());
+        sysUserExt.setCdKeyShopUrl(user.getCdKeyShopUrl());
         userExtMapper.updateSysUserExt(sysUserExt);
         return userMapper.updateUser(user);
     }
