@@ -30,7 +30,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectVideoVo"/>
         <where>  
             <if test="url != null  and url != ''"> and url = #{url}</if>
-            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="title != null  and title != ''"> and title like concat('%',#{title},'%')</if>
             <if test="category != null  and category != ''"> and (category = #{category} or category like concat(#{category},',%') or category like concat('%,',#{category}) or category like concat('%,',#{category},',%'))</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
             <if test="type != null  and type != ''"> and type = #{type}</if>
