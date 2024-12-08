@@ -164,13 +164,13 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="视频" prop="appFile">
-          <file-upload v-model="form.url" limit="1" fileSize="500" :fileType="['mp4', 'avi', 'rmvb']"/>
+          <file-upload v-model="form.url" :limit="1" :fileSize="500" :fileType="['mp4', 'avi', 'rmvb']"/>
         </el-form-item>
         <el-form-item label="视频url" prop="url">
           <el-input v-model="form.url" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="视频图片" prop="appFile">
-          <file-upload v-model="form.img" limit="1" fileSize="50" :fileType="['jpg','jpeg','bmp','gif','png']"/>
+          <file-upload v-model="form.img" :limit="1" :fileSize="50" :fileType="['jpg','jpeg','bmp','gif','png']"/>
         </el-form-item>
         <el-form-item label="视频标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入视频标题"/>
@@ -337,21 +337,30 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const categoryMenu = this.getTreeSelect();
-      alert(categoryMenu)
+      this.getTreeSelect();
       const id = row.id || this.ids
       getVideo(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.$nextTick(() => {
-          categoryMenu.then(res => {
-            let checkedKeys = res.checkedKeys
-            checkedKeys.forEach((v) => {
+        let checkedKeys = response.data.category.split(",");
+          this.categoryOptions.forEach(res => {
+           checkedKeys.forEach((v) => {
+              if(res.id == v){
                 this.$nextTick(()=>{
-                    this.$refs.menu.setChecked(v, true ,false);
+                    this.$refs.category.setChecked(v, true ,false);
                 })
+              }
             })
-          });
+          let children = res.children;
+           children.forEach((c) => {
+            checkedKeys.forEach((v) => {
+              if(c.id == v){
+                this.$nextTick(()=>{
+                    this.$refs.category.setChecked(v, true ,false);
+                })
+              }
+            })
+           })
         });
         this.title = "修改视频";
       });
