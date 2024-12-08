@@ -81,11 +81,7 @@
     <el-table v-loading="loading" :data="videoList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="视频url" align="center" prop="url"/>
-      <el-table-column label="视频分类" align="center" prop="category">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.video_category" :value="scope.row.category"/>
-        </template>
-      </el-table-column>
+      <el-table-column label="视频分类" align="center" prop="category"/>
       <el-table-column label="视频标题" align="center" prop="title"/>
       <el-table-column label="播放量" align="center" prop="playNum"/>
       <el-table-column label="点赞量" align="center" prop="likeNum"/>
@@ -139,13 +135,13 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="视频分类">
-<!--          <el-checkbox v-model="categoryExpand" @change="handleCheckedTreeExpand($event)">展开/折叠-->
-<!--          </el-checkbox>-->
-<!--          <el-checkbox v-model="categoryNodeAll" @change="handleCheckedTreeNodeAll($event)">全选/全不选-->
-<!--          </el-checkbox>-->
-<!--          <el-checkbox v-model="form.categoryCheckStrictly" @change="handleCheckedTreeConnect($event)">-->
-<!--            父子联动-->
-<!--          </el-checkbox>-->
+          <el-checkbox v-model="categoryExpand" @change="handleCheckedTreeExpand($event)">展开/折叠
+          </el-checkbox>
+          <el-checkbox v-model="categoryNodeAll" @change="handleCheckedTreeNodeAll($event)">全选/全不选
+          </el-checkbox>
+          <el-checkbox v-model="form.categoryCheckStrictly" @change="handleCheckedTreeConnect($event)">
+            父子联动
+          </el-checkbox>
           <el-tree
             class="tree-border"
             :data="categoryOptions"
@@ -263,7 +259,7 @@ export default {
         this.categoryOptions = response.data;
       });
     },
-        // 所有菜单节点数据-查询条件
+    // 所有菜单节点数据-查询条件
     getAllCheckedKeysSearch() {
       // 目前被选中的菜单节点
       let checkedKeys = this.$refs.searchCategory.getCheckedKeys();
@@ -341,11 +337,22 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      this.getTreeSelect();
+      const categoryMenu = this.getTreeSelect();
+      alert(categoryMenu)
       const id = row.id || this.ids
       getVideo(id).then(response => {
         this.form = response.data;
         this.open = true;
+        this.$nextTick(() => {
+          categoryMenu.then(res => {
+            let checkedKeys = res.checkedKeys
+            checkedKeys.forEach((v) => {
+                this.$nextTick(()=>{
+                    this.$refs.menu.setChecked(v, true ,false);
+                })
+            })
+          });
+        });
         this.title = "修改视频";
       });
     },
