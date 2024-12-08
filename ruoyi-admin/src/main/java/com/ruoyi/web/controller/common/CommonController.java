@@ -84,7 +84,7 @@ public class CommonController
             String url = serverConfig.getUrl() + fileName;
             AjaxResult ajax = AjaxResult.success();
             ajax.put("url", url);
-            ajax.put("fileName", fileName);
+            ajax.put("fileName", serverConfig.getProfileUrl()+fileName);
             ajax.put("newFileName", FileUtils.getName(fileName));
             ajax.put("originalFilename", file.getOriginalFilename());
             return ajax;
@@ -115,7 +115,7 @@ public class CommonController
                 String fileName = FileUploadUtils.upload(filePath, file);
                 String url = serverConfig.getUrl() + fileName;
                 urls.add(url);
-                fileNames.add(fileName);
+                fileNames.add(serverConfig.getProfileUrl()+fileName);
                 newFileNames.add(FileUtils.getName(fileName));
                 originalFilenames.add(file.getOriginalFilename());
             }
