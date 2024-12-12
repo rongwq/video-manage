@@ -266,10 +266,10 @@ public class VideoApiController extends BaseController {
             query.setType(IntegralType.BUY_VIDEO.getCode());
             List<UserIntegralRecord> list = userIntegralRecordService.selectUserIntegralRecordList(query);
             if (!list.isEmpty()) {
-                return R.fail("视频已购买");
+                return R.ok("视频已购买");
             }
         } else {
-            return R.fail("视频无需购买");
+            return R.ok("视频无需购买");
         }
         if (video.getMoney() == null) {
             return R.fail("视频价格异常");

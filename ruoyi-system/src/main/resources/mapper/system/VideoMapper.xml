@@ -68,6 +68,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="money != null">money,</if>
+            <if test="playNum != null">play_num,</if>
+            <if test="likeNum != null">like_num,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="img != null">#{img},</if>
@@ -82,6 +84,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="money != null">#{money},</if>
+            <if test="playNum != null">#{playNum},</if>
+            <if test="likeNum != null">#{likeNum},</if>
          </trim>
     </insert>
 
@@ -100,6 +104,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="money != null">money = #{money},</if>
+            <if test="playNum != null">play_num = #{playNum},</if>
+            <if test="likeNum != null">like_num = #{likeNum},</if>
         </trim>
         where id = #{id}
     </update>
