@@ -61,6 +61,18 @@ public class VideoApiController extends BaseController {
     }
 
     /**
+     * 首页推荐分类视频
+     * 播放量多的显示-支持分页
+     */
+    @GetMapping("/list/home/recommend")
+    @Anonymous
+    public TableDataInfo homeRecommendList() {
+        startPage();
+        List<Video> list = videoService.selectHomeRecommendList();
+        return getDataTable(list);
+    }
+
+    /**
      * 推荐视频
      */
     @GetMapping("/list/recommend")
@@ -100,6 +112,12 @@ public class VideoApiController extends BaseController {
                 video.setCollect(true);
             } else {
                 video.setLike(false);
+            }
+            //查询是否购买视频
+            if (getUserIntegralRecords(id,userId).isEmpty()) {
+                video.setBuy(false);
+            }else{
+                video.setBuy(true);
             }
         }
         return success(video);
@@ -260,11 +278,7 @@ public class VideoApiController extends BaseController {
         Long userId = getUserId();
         //如果视频为购买类型，则需要校验是否购买，未购买则返回错误
         if (VideoType.BUY.getCode().equals(video.getType())) {
-            UserIntegralRecord query = new UserIntegralRecord();
-            query.setUserId(userId);
-            query.setRecordId(videoId);
-            query.setType(IntegralType.BUY_VIDEO.getCode());
-            List<UserIntegralRecord> list = userIntegralRecordService.selectUserIntegralRecordList(query);
+            List<UserIntegralRecord> list = getUserIntegralRecords(videoId, userId);
             if (!list.isEmpty()) {
                 return R.ok("视频已购买");
             }
@@ -282,6 +296,15 @@ public class VideoApiController extends BaseController {
         //保存流水+扣费
         userIntegralRecordService.saveUserIntegralRecord(userId, videoId, 0 - video.getMoney(), IntegralType.BUY_VIDEO, "视频购买");
         return R.ok();
+    }
+
+    private List<UserIntegralRecord> getUserIntegralRecords(Long videoId, Long userId) {
+        UserIntegralRecord query = new UserIntegralRecord();
+        query.setUserId(userId);
+        query.setRecordId(videoId);
+        query.setType(IntegralType.BUY_VIDEO.getCode());
+        List<UserIntegralRecord> list = userIntegralRecordService.selectUserIntegralRecordList(query);
+        return list;
     }
 
 

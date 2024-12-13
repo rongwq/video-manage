@@ -61,4 +61,7 @@ public class Video extends BaseEntity
     /** 收费视频金额 */
     private Integer money;
 
+    /** 是否购买 */
+    private Boolean buy;
+
 }

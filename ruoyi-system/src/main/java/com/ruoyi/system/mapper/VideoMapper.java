@@ -34,6 +34,8 @@ public interface VideoMapper
      */
     List<Video> selectRecommendList(Video video);
 
+    List<Video>  selectHomeRecommendList();
+
     /**
      * 新增视频
      * 

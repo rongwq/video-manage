@@ -49,6 +49,13 @@ public class VideoServiceImpl implements IVideoService
     {
         return VideoMapper.selectRecommendList(video);
     }
+
+    @Override
+    public List<Video> selectHomeRecommendList()
+    {
+        return VideoMapper.selectHomeRecommendList();
+    }
+
     @Override
     public List<Video> selectVideoListByCategoryId(Long categoryId){
         return VideoMapper.selectVideoListByCategoryId(categoryId);
