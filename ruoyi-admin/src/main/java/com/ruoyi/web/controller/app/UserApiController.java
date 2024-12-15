@@ -25,6 +25,7 @@ import com.ruoyi.system.service.ISysUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -42,6 +43,7 @@ import java.util.Map;
 @Api("用户对外接口")
 @RestController
 @RequestMapping("/api/user")
+@Slf4j
 public class UserApiController extends BaseController {
     @Autowired
     private ISysUserService userService;
@@ -160,6 +162,7 @@ public class UserApiController extends BaseController {
         adUseRecord.setAdId(adId);
         adUseRecord.setUserId(userId);
         adUseRecord.setIp(IpUtils.getIpAddr());
+        log.info("查询用户当天是否有点击过广告，ip："+adUseRecord.getIp());
         List<AdUseRecord> list = adUseRecordService.selectAdUseRecordByIdAndUserId(adUseRecord);
         if(CollectionUtils.isEmpty(list)){
             return R.ok(false);
