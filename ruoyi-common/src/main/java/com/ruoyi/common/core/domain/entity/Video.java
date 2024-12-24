@@ -18,6 +18,7 @@ public class Video extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 视频ID */
+    @Excel(name = "视频ID")
     private Long id;
 
     @Excel(name = "视频图片url")
@@ -47,9 +48,11 @@ public class Video extends BaseEntity
     private List<VideoAd> adList;
 
     /** 点赞量 */
+    @Excel(name = "点赞量")
     private Integer likeNum;
 
     /** 播放量 */
+    @Excel(name = "播放量")
     private Integer playNum;
 
     /** 是否点赞 */
@@ -59,6 +62,7 @@ public class Video extends BaseEntity
     private Boolean collect;
 
     /** 收费视频金额 */
+    @Excel(name = "收费视频金额")
     private Integer money;
 
     /** 是否购买 */

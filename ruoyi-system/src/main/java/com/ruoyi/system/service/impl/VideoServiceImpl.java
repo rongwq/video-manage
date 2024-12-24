@@ -1,12 +1,21 @@
 package com.ruoyi.system.service.impl;
 
 import java.util.List;
+
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.bean.BeanValidators;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.mapper.VideoMapper;
 import com.ruoyi.common.core.domain.entity.Video;
 import com.ruoyi.system.service.IVideoService;
+
+import javax.validation.Validator;
 
 /**
  * 视频Service业务层处理
@@ -15,10 +24,13 @@ import com.ruoyi.system.service.IVideoService;
  * @date 2024-10-13
  */
 @Service
+@Slf4j
 public class VideoServiceImpl implements IVideoService
 {
     @Autowired
     private VideoMapper VideoMapper;
+    @Autowired
+    protected Validator validator;
 
     /**
      * 查询视频
@@ -126,5 +138,62 @@ public class VideoServiceImpl implements IVideoService
         return VideoMapper.updatePlayNum(id);
     }
 
+    @Override
+    public String importData(List<Video> videoList, Boolean isUpdateSupport, String operName) {
+        if (StringUtils.isNull(videoList) || videoList.size() == 0)
+        {
+            throw new ServiceException("导入数据不能为空！");
+        }
+        int successNum = 0;
+        int failureNum = 0;
+        StringBuilder successMsg = new StringBuilder();
+        StringBuilder failureMsg = new StringBuilder();
+        for (Video video : videoList)
+        {
+            try
+            {
+                // 验证是否存在视频
+                Video v = VideoMapper.selectVideoById(video.getId());
+                if (StringUtils.isNull(v))
+                {
+                    BeanValidators.validateWithException(validator, video);
+                    video.setCreateBy(operName);
+                    VideoMapper.insertVideo(video);
+                    successNum++;
+                    successMsg.append("<br/>" + successNum + "、视频 " + video.getTitle() + " 导入成功");
+                }
+                else if (isUpdateSupport)
+                {
+                    BeanValidators.validateWithException(validator, video);
+                    video.setUpdateBy(operName);
+                    VideoMapper.updateVideo(video);
+                    successNum++;
+                    successMsg.append("<br/>" + successNum + "、视频 " + video.getTitle() + " 更新成功");
+                }
+                else
+                {
+                    failureNum++;
+                    failureMsg.append("<br/>" + failureNum + "、视频 " + video.getTitle() + " 已存在");
+                }
+            }
+            catch (Exception e)
+            {
+                failureNum++;
+                String msg = "<br/>" + failureNum + "、视频 " +  video.getTitle() + " 导入失败：";
+                failureMsg.append(msg + e.getMessage());
+                log.error(msg, e);
+            }
+        }
+        if (failureNum > 0)
+        {
+            failureMsg.insert(0, "很抱歉，导入失败！共 " + failureNum + " 条数据格式不正确，错误如下：");
+            throw new ServiceException(failureMsg.toString());
+        }
+        else
+        {
+            successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
+        }
+        return successMsg.toString();
+    }
 
 }

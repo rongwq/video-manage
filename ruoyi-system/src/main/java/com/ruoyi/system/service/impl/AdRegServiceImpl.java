@@ -2,6 +2,7 @@ package com.ruoyi.system.service.impl;
 
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.system.mapper.AdRegRecordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.mapper.AdRegMapper;
@@ -19,6 +20,8 @@ public class AdRegServiceImpl implements IAdRegService
 {
     @Autowired
     private AdRegMapper adRegMapper;
+    @Autowired
+    private AdRegRecordMapper adRegRecordMapper;
 
     /**
      * 查询注册广告
@@ -41,7 +44,16 @@ public class AdRegServiceImpl implements IAdRegService
     @Override
     public List<AdReg> selectAdRegList(AdReg adReg)
     {
-        return adRegMapper.selectAdRegList(adReg);
+        List<AdReg> list = adRegMapper.selectAdRegList(adReg);
+        for (AdReg reg : list) {
+            AdReg result = adRegRecordMapper.selectAdRegRecordByAdId(reg.getId());
+            if(result!=null){
+                reg.setYesterdayNum(result.getYesterdayNum());
+                reg.setTodayNum(result.getTodayNum());
+                reg.setAllNum(result.getAllNum());
+            }
+        }
+        return list;
     }
 
     @Override

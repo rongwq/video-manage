@@ -1,6 +1,8 @@
 package com.ruoyi.system.service;
 
 import java.util.List;
+
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.entity.Video;
 
 /**
@@ -80,4 +82,14 @@ public interface IVideoService
      * @return
      */
     int updatePlayNum(Long id);
+
+    /**
+     * 导入数据
+     *
+     * @param videoList 数据列表
+     * @param isUpdateSupport 是否更新支持，如果已存在，则进行更新数据
+     * @param operName 操作用户
+     * @return 结果
+     */
+    String importData(List<Video> videoList, Boolean isUpdateSupport, String operName);
 }

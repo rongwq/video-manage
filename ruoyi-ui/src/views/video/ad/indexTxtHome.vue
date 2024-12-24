@@ -1,14 +1,6 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="广告标题" prop="title">
-        <el-input
-          v-model="queryParams.title"
-          placeholder="请输入广告标题"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="排序" prop="orderNum">
         <el-input
           v-model="queryParams.orderNum"
@@ -31,7 +23,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:reg:add']"
+          v-hasPermi="['system:adtxthome:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -42,7 +34,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:reg:edit']"
+          v-hasPermi="['system:adtxthome:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -53,7 +45,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:reg:remove']"
+          v-hasPermi="['system:adtxthome:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -63,23 +55,17 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:reg:export']"
+          v-hasPermi="['system:adtxthome:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="regList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="adtxthomeList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="广告ID" align="center" prop="id" />
-      <el-table-column label="广告url" align="center" prop="url" />
-      <el-table-column label="广告标题" align="center" prop="title" />
+      <el-table-column label="广告内容" align="center" prop="content" />
       <el-table-column label="排序" align="center" prop="orderNum" />
-      <el-table-column label="昨日" align="center" prop="yesterdayNum" />
-      <el-table-column label="今日" align="center" prop="todayNum" />
-      <el-table-column label="累计" align="center" prop="allNum" />
-      <el-table-column label="描述" align="center" prop="remark" />
-      <el-table-column label="广告类型1斗音 2快手 3拼多多" align="center" prop="type" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -87,14 +73,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:reg:edit']"
+            v-hasPermi="['system:adtxthome:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:reg:remove']"
+            v-hasPermi="['system:adtxthome:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -108,32 +94,14 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改注册广告对话框 -->
+    <!-- 添加或修改首页文字广告对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="广告类型">
-          <el-radio-group v-model="form.type">
-            <el-radio
-              v-for="dict in dict.type.reg_ad_type"
-              :key="dict.value"
-              :label="dict.value"
-            >{{dict.label}}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="广告" prop="appFile">
-          <file-upload v-model="form.url" limit="1" fileSize="500" :fileType="['mp4', 'avi', 'rmvb','jpg','jpeg','bmp','gif','png']"/>
-        </el-form-item>
-        <el-form-item label="广告url" prop="url">
-          <el-input v-model="form.url" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="广告标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入广告标题" />
+        <el-form-item label="广告内容">
+          <el-input v-model="form.content" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="排序" prop="orderNum">
           <el-input v-model="form.orderNum" placeholder="请输入排序" />
-        </el-form-item>
-        <el-form-item label="描述" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入描述" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -145,11 +113,10 @@
 </template>
 
 <script>
-import { listReg, getReg, delReg, addReg, updateReg } from "@/api/video/adReg";
+import { listAdtxthome, getAdtxthome, delAdtxthome, addAdtxthome, updateAdtxthome } from "@/api/video/adtxthome";
 
 export default {
-  name: "Reg",
-  dicts: ['reg_ad_type'],
+  name: "Adtxthome",
   data() {
     return {
       // 遮罩层
@@ -164,8 +131,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 注册广告表格数据
-      regList: [],
+      // 首页文字广告表格数据
+      adtxthomeList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -174,10 +141,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        url: null,
-        title: null,
+        content: null,
         orderNum: null,
-        type: null,
+        status: null,
       },
       // 表单参数
       form: {},
@@ -190,11 +156,11 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询注册广告列表 */
+    /** 查询首页文字广告列表 */
     getList() {
       this.loading = true;
-      listReg(this.queryParams).then(response => {
-        this.regList = response.rows;
+      listAdtxthome(this.queryParams).then(response => {
+        this.adtxthomeList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -208,11 +174,9 @@ export default {
     reset() {
       this.form = {
         id: null,
-        url: null,
-        title: null,
+        content: null,
         orderNum: null,
-        remark: null,
-        type: null,
+        status: null,
         createBy: null,
         createTime: null,
         updateBy: null,
@@ -240,16 +204,16 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加注册广告";
+      this.title = "添加首页文字广告";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getReg(id).then(response => {
+      getAdtxthome(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改注册广告";
+        this.title = "修改首页文字广告";
       });
     },
     /** 提交按钮 */
@@ -257,13 +221,13 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            updateReg(this.form).then(response => {
+            updateAdtxthome(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addReg(this.form).then(response => {
+            addAdtxthome(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -275,8 +239,8 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除注册广告编号为"' + ids + '"的数据项？').then(function() {
-        return delReg(ids);
+      this.$modal.confirm('是否确认删除首页文字广告编号为"' + ids + '"的数据项？').then(function() {
+        return delAdtxthome(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -284,9 +248,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/reg/export', {
+      this.download('system/adtxthome/export', {
         ...this.queryParams
-      }, `reg_${new Date().getTime()}.xlsx`)
+      }, `adtxthome_${new Date().getTime()}.xlsx`)
     }
   }
 };

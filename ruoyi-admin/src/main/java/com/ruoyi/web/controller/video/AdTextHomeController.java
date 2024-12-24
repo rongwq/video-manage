@@ -25,10 +25,10 @@ import com.ruoyi.common.core.page.TableDataInfo;
  * 首页文字广告Controller
  * 
  * @author rongwq
- * @date 2024-11-08
+ * @date 2024-12-23
  */
 @RestController
-@RequestMapping("/video/adTextHome")
+@RequestMapping("/system/adtxthome")
 public class AdTextHomeController extends BaseController
 {
     @Autowired
@@ -37,7 +37,7 @@ public class AdTextHomeController extends BaseController
     /**
      * 查询首页文字广告列表
      */
-    @PreAuthorize("@ss.hasPermi('system:home:list')")
+    @PreAuthorize("@ss.hasPermi('system:adtxthome:list')")
     @GetMapping("/list")
     public TableDataInfo list(AdTextHome adTextHome)
     {
@@ -49,7 +49,7 @@ public class AdTextHomeController extends BaseController
     /**
      * 导出首页文字广告列表
      */
-    @PreAuthorize("@ss.hasPermi('system:home:export')")
+    @PreAuthorize("@ss.hasPermi('system:adtxthome:export')")
     @Log(title = "首页文字广告", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, AdTextHome adTextHome)
@@ -62,7 +62,7 @@ public class AdTextHomeController extends BaseController
     /**
      * 获取首页文字广告详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:home:query')")
+    @PreAuthorize("@ss.hasPermi('system:adtxthome:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -72,7 +72,7 @@ public class AdTextHomeController extends BaseController
     /**
      * 新增首页文字广告
      */
-    @PreAuthorize("@ss.hasPermi('system:home:add')")
+    @PreAuthorize("@ss.hasPermi('system:adtxthome:add')")
     @Log(title = "首页文字广告", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody AdTextHome adTextHome)
@@ -83,7 +83,7 @@ public class AdTextHomeController extends BaseController
     /**
      * 修改首页文字广告
      */
-    @PreAuthorize("@ss.hasPermi('system:home:edit')")
+    @PreAuthorize("@ss.hasPermi('system:adtxthome:edit')")
     @Log(title = "首页文字广告", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody AdTextHome adTextHome)
@@ -94,7 +94,7 @@ public class AdTextHomeController extends BaseController
     /**
      * 删除首页文字广告
      */
-    @PreAuthorize("@ss.hasPermi('system:home:remove')")
+    @PreAuthorize("@ss.hasPermi('system:adtxthome:remove')")
     @Log(title = "首页文字广告", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

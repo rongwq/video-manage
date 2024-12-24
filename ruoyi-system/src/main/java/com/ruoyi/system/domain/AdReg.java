@@ -1,5 +1,6 @@
 package com.ruoyi.system.domain;
 
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -11,6 +12,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * @author rongwq
  * @date 2024-12-13
  */
+@Data
 public class AdReg extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
@@ -30,69 +32,16 @@ public class AdReg extends BaseEntity
     @Excel(name = "排序")
     private Long orderNum;
 
+    //昨天统计
+    private Long yesterdayNum;
+
+    //今天统计
+    private Long todayNum;
+
+    //所有
+    private Long allNum;
+
     /** 广告类型1斗音 2快手 3拼多多 */
     @Excel(name = "广告类型1斗音 2快手 3拼多多")
     private String type;
-
-    public void setId(Long id) 
-    {
-        this.id = id;
-    }
-
-    public Long getId() 
-    {
-        return id;
-    }
-    public void setUrl(String url) 
-    {
-        this.url = url;
-    }
-
-    public String getUrl() 
-    {
-        return url;
-    }
-    public void setTitle(String title) 
-    {
-        this.title = title;
-    }
-
-    public String getTitle() 
-    {
-        return title;
-    }
-    public void setOrderNum(Long orderNum) 
-    {
-        this.orderNum = orderNum;
-    }
-
-    public Long getOrderNum() 
-    {
-        return orderNum;
-    }
-    public void setType(String type) 
-    {
-        this.type = type;
-    }
-
-    public String getType() 
-    {
-        return type;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("url", getUrl())
-            .append("title", getTitle())
-            .append("orderNum", getOrderNum())
-            .append("remark", getRemark())
-            .append("type", getType())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .append("updateBy", getUpdateBy())
-            .append("updateTime", getUpdateTime())
-            .toString();
-    }
 }

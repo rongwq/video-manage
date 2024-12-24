@@ -35,12 +35,12 @@
 
     <select id="selectAdUseRecordByIdAndUserId" resultMap="AdUseRecordResult">
         <include refid="selectAdUseRecordVo"/>
-        where id = #{adId}
+        where ad_id = #{adId}
         <if test="userId != null and userId !=''">
             and (user_id = #{userId} or ip = #{ip})
         </if>
         and ip = #{ip}
-        and DATE_FORMAT(create_time,'yyyy-MM-dd') = DATE_FORMAT(now(),'yyyy-MM-dd')
+        and DATE_FORMAT(create_time,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
     </select>
 
     <insert id="insertAdUseRecord" parameterType="AdUseRecord" useGeneratedKeys="true" keyProperty="id">

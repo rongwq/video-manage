@@ -92,15 +92,15 @@ public class UserApiController extends BaseController {
         }
         Cdkey Cdkey = CdkeyService.selectCdkeyByCdkeyCode(regUser.getCdkey());
         if (Cdkey == null) {
-            return R.fail("注册用户'" + user.getUserName() + "'失败，激活码不存在");
+            return R.fail("注册用户'" + user.getUserName() + "'失败，注册码不存在");
         }
         if (Cdkey != null && CdkeyStatus.ENABLED.getCode().equals(Cdkey.getStatus())) {
-            return R.fail("注册用户'" + user.getUserName() + "'失败，激活码已激活");
+            return R.fail("注册用户'" + user.getUserName() + "'失败，注册码已激活");
         }
         if (Cdkey != null && CdkeyStatus.UN_ENABLED.getCode().equals(Cdkey.getStatus()) && Cdkey.getUserId() != null) {
             SysUser keyUser = userService.selectUserById(Cdkey.getUserId());
             if (keyUser != null && !keyUser.getUserName().equals(regUser.getUserName())) {
-                return R.fail("注册用户'" + user.getUserName() + "'失败，激活码已绑定用户");
+                return R.fail("注册用户'" + user.getUserName() + "'失败，注册码已绑定用户");
             }
         }
         if (!userService.checkUserNameUnique(user)) {

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.common.annotation.Anonymous;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.entity.VideoAd;
 import com.ruoyi.common.core.domain.entity.VideoCategory;
 import com.ruoyi.common.utils.StringUtils;
@@ -28,6 +29,7 @@ import com.ruoyi.common.core.domain.entity.Video;
 import com.ruoyi.system.service.IVideoService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 视频Controller
@@ -130,5 +132,24 @@ public class VideoController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(VideoService.deleteVideoByIds(ids));
+    }
+
+    @Log(title = "视频管理", businessType = BusinessType.IMPORT)
+    @PreAuthorize("@ss.hasPermi('system:video:import')")
+    @PostMapping("/importData")
+    public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception
+    {
+        ExcelUtil<Video> util = new ExcelUtil(Video.class);
+        List<Video> videoList = util.importExcel(file.getInputStream());
+        String operName = getUsername();
+        String message = VideoService.importData(videoList, updateSupport, operName);
+        return success(message);
+    }
+
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response)
+    {
+        ExcelUtil<Video> util = new ExcelUtil(Video.class);
+        util.importTemplateExcel(response, "视频数据");
     }
 }
