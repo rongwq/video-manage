@@ -17,6 +17,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="IP" prop="ip">
+        <el-input
+          v-model="queryParams.address"
+          placeholder="地址"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -28,6 +36,7 @@
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="广告ID" align="center" prop="adId" />
       <el-table-column label="IP" align="center" prop="ip" />
+      <el-table-column label="地址" align="center" prop="address" />
       <el-table-column label="创建时间" align="center" prop="createTime"/>
     </el-table>
 
@@ -38,22 +47,6 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-
-    <!-- 添加或修改用户注册广告请求记录对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="广告ID" prop="adId">
-          <el-input v-model="form.adId" placeholder="请输入广告ID" />
-        </el-form-item>
-        <el-form-item label="IP" prop="ip">
-          <el-input v-model="form.ip" placeholder="请输入IP" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 

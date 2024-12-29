@@ -25,6 +25,7 @@
             <if test="adId != null ">and ad_id = #{adId}</if>
             <if test="ip != null  and ip != ''">and ip = #{ip}</if>
         </where>
+        order by create_time desc
     </select>
 
     <select id="selectAdRegRecordById" parameterType="Long" resultMap="AdRegRecordResult">

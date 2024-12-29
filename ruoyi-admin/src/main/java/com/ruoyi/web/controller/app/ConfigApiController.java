@@ -11,6 +11,7 @@ import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserExtService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api("其它接口")
 @RestController
 @RequestMapping("/api/config")
+@Slf4j
 public class ConfigApiController extends BaseController {
     @Autowired
     private ISysConfigService sysConfigService;
@@ -46,10 +48,11 @@ public class ConfigApiController extends BaseController {
     @ApiOperation("获取相关地址")
     @RequestMapping("/getKey")
     @Anonymous
-    public R getKey(@RequestParam(required = false) Long userId) {
+    public R getKey(@RequestParam(required = false) Long userId,@RequestParam(required = false) String domain) {
         JSONObject js = new JSONObject();
-        //优先解析通过用户获取相关地址
-        String domain = IpUtils.getDomain();
+        //优先解析通过用户获取相关地址--无法获取域名，只能获取ip
+//        String domain = IpUtils.getDomain();
+        log.info("domain:" + domain);
         if (StringUtils.isNotEmpty(domain)) {
             SysUserExt sysUserExt = sysUserExtService.selectByDomain(domain);
             if (sysUserExt != null) {
