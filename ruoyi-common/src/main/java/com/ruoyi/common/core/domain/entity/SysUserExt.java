@@ -55,4 +55,6 @@ public class SysUserExt implements Serializable
     /** 注册码店铺地址 */
     private String cdKeyShopUrl;
 
+    /** 域名 */
+    private String domain;
 }

@@ -15,10 +15,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="getArticleTime"    column="get_article_time"    />
         <result property="shopUrl"    column="shop_url"    />
         <result property="cdKeyShopUrl"    column="cd_key_shop_url"    />
+        <result property="domain"    column="domain"    />
     </resultMap>
 
     <sql id="selectSysUserExtVo">
-        select user_id, id_card, real_name, bank_card, qr_code, integral, puser_id, get_article_time, shop_url, cd_key_shop_url from sys_user_ext
+        select domain,user_id, id_card, real_name, bank_card, qr_code, integral, puser_id, get_article_time, shop_url, cd_key_shop_url from sys_user_ext
     </sql>
 
     <select id="selectSysUserExtList" parameterType="SysUserExt" resultMap="SysUserExtResult">
@@ -38,6 +39,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where user_id = #{userId}
     </select>
 
+    <select id="selectByDomain" parameterType="String" resultMap="SysUserExtResult">
+        <include refid="selectSysUserExtVo"/>
+        where domain like concat('%', #{domain}, '%')
+        order by user_id desc
+        limit 1
+    </select>
+
     <insert id="insertSysUserExt" parameterType="SysUserExt">
         insert into sys_user_ext
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -51,6 +59,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="getArticleTime != null">get_article_time,</if>
             <if test="shopUrl != null">shop_url,</if>
             <if test="cdKeyShopUrl != null">cd_key_shop_url,</if>
+            <if test="domain != null">domain,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
@@ -63,6 +72,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="getArticleTime != null">#{getArticleTime},</if>
             <if test="shopUrl != null">#{shopUrl},</if>
             <if test="cdKeyShopUrl != null">#{cdKeyShopUrl},</if>
+            <if test="domain != null">#{domain},</if>
          </trim>
     </insert>
 
@@ -78,6 +88,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="getArticleTime != null">get_article_time = #{getArticleTime},</if>
             <if test="shopUrl != null">shop_url = #{shopUrl},</if>
             <if test="cdKeyShopUrl != null">cd_key_shop_url = #{cdKeyShopUrl},</if>
+            <if test="domain != null">domain = #{domain},</if>
         </trim>
         where user_id = #{userId}
     </update>

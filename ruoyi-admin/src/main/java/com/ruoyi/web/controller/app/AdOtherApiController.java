@@ -4,6 +4,9 @@ import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.UserStatus;
+import com.ruoyi.common.utils.ServletUtils;
+import com.ruoyi.common.utils.ip.Address;
+import com.ruoyi.common.utils.ip.AddressUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.system.domain.AdOther;
 import com.ruoyi.system.domain.AdReg;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 
@@ -57,13 +61,30 @@ public class AdOtherApiController extends BaseController {
         if (adReg == null) {
             adReg = adRegService.selectAdRegByOrderNum(0L);
         }
-        //保存请求记录
+        String title = adReg.getTitle();
+        Long id = adReg.getId();
+        HttpServletRequest request = ServletUtils.getRequest();
+        //保存请求记录-异步
+        Thread thread = new Thread(() -> {
+            saveAdRegRecord(id, title, request);
+        });
+        thread.start();
+        return success(adReg);
+    }
+
+    String saveAdRegRecord(Long id, String title, HttpServletRequest request) {
         AdRegRecord adRegRecord = new AdRegRecord();
-        adRegRecord.setAdId(adReg.getId());
-        adRegRecord.setIp(IpUtils.getIpAddr());
-        adRegRecord.setRemark("请求广告:"+adReg.getTitle());
+        adRegRecord.setAdId(id);
+        String ip = IpUtils.getIpAddr(request);
+        adRegRecord.setIp(ip);
+        try {
+            adRegRecord.setAddress(AddressUtils.getRealAddressByIP(ip));
+        }catch (Exception e){
+            logger.error("请求IP地址异常：" + e.getMessage(),e);
+        }
+        adRegRecord.setRemark("请求广告:" + title);
         adRegRecord.setCreateTime(new Date());
         adRegRecordService.insertAdRegRecord(adRegRecord);
-        return success(adReg);
+        return "1";
     }
 }

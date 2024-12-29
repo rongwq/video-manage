@@ -310,6 +310,13 @@
         </el-row>
         <el-row>
           <el-col :span="24">
+            <el-form-item label="域名" prop="domain">
+              <el-input v-model="form.domain" placeholder="请输入域名，多个域名采用,隔开" maxlength="30" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
             <el-form-item label="备注">
               <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
             </el-form-item>

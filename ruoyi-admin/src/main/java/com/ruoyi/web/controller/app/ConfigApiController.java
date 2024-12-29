@@ -6,6 +6,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.entity.SysUserExt;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserExtService;
 import io.swagger.annotations.Api;
@@ -47,23 +48,23 @@ public class ConfigApiController extends BaseController {
     @Anonymous
     public R getKey(@RequestParam(required = false) Long userId) {
         JSONObject js = new JSONObject();
+        //优先解析通过用户获取相关地址
+        String domain = IpUtils.getDomain();
+        if (StringUtils.isNotEmpty(domain)) {
+            SysUserExt sysUserExt = sysUserExtService.selectByDomain(domain);
+            if (sysUserExt != null) {
+                getShopUrl(userId, js, sysUserExt);
+            }else {
+                setUrl(js);
+            }
+        } else {
+            setUrl(js);
+        }
+        //域名无效，则通过用户id
         if (userId != null) {
             SysUserExt sysUserExt = sysUserExtService.selectSysUserExtByUserId(userId);
             if (sysUserExt != null) {
-                String shopUrl = sysUserExt.getShopUrl();
-                if (StringUtils.isNotEmpty(shopUrl)) {
-                    js.put("rechargeUrl", shopUrl);
-                } else {
-                    js.put("rechargeUrl", sysConfigService.selectConfigByKey("recharge_key_url"));
-                }
-                String cdKeyShopUrl = sysUserExt.getCdKeyShopUrl();
-                if (StringUtils.isNotEmpty(cdKeyShopUrl)) {
-                    js.put("cdKeyUrl", cdKeyShopUrl);
-                } else {
-                    js.put("cdKeyUrl", sysConfigService.selectConfigByKey("cd_key_url"));
-                }
-                String h5Url = sysConfigService.selectConfigByKey("h5_url");
-                js.put("h5Url", h5Url+"?id="+userId);
+                getShopUrl(userId, js, sysUserExt);
             }else {
                 setUrl(js);
             }
@@ -71,6 +72,23 @@ public class ConfigApiController extends BaseController {
             setUrl(js);
         }
         return R.ok(js);
+    }
+
+    private void getShopUrl(Long userId, JSONObject js, SysUserExt sysUserExt) {
+        String shopUrl = sysUserExt.getShopUrl();
+        if (StringUtils.isNotEmpty(shopUrl)) {
+            js.put("rechargeUrl", shopUrl);
+        } else {
+            js.put("rechargeUrl", sysConfigService.selectConfigByKey("recharge_key_url"));
+        }
+        String cdKeyShopUrl = sysUserExt.getCdKeyShopUrl();
+        if (StringUtils.isNotEmpty(cdKeyShopUrl)) {
+            js.put("cdKeyUrl", cdKeyShopUrl);
+        } else {
+            js.put("cdKeyUrl", sysConfigService.selectConfigByKey("cd_key_url"));
+        }
+        String h5Url = sysConfigService.selectConfigByKey("h5_url");
+        js.put("h5Url", h5Url+"?id="+ userId);
     }
 
     private void setUrl(JSONObject js) {

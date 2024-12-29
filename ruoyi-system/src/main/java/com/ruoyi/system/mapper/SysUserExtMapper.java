@@ -20,6 +20,8 @@ public interface SysUserExtMapper
      */
     public SysUserExt selectSysUserExtByUserId(Long userId);
 
+    SysUserExt selectByDomain(String domain);
+
     /**
      * 查询用户扩展列表
      * 

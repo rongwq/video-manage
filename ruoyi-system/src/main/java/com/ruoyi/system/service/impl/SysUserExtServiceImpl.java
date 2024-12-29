@@ -32,6 +32,12 @@ public class SysUserExtServiceImpl implements ISysUserExtService
         return sysUserExtMapper.selectSysUserExtByUserId(userId);
     }
 
+    @Override
+    public SysUserExt selectByDomain(String domain)
+    {
+        return sysUserExtMapper.selectByDomain(domain);
+    }
+
     /**
      * 查询用户扩展列表
      * 

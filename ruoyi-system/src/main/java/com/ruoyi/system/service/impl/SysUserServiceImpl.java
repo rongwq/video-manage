@@ -316,6 +316,7 @@ public class SysUserServiceImpl implements ISysUserService
         SysUserExt sysUserExt = userExtMapper.selectSysUserExtByUserId(userId);
         sysUserExt.setShopUrl(user.getShopUrl());
         sysUserExt.setCdKeyShopUrl(user.getCdKeyShopUrl());
+        sysUserExt.setDomain(user.getDomain());
         userExtMapper.updateSysUserExt(sysUserExt);
         return userMapper.updateUser(user);
     }
