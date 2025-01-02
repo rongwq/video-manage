@@ -61,18 +61,17 @@ public class ConfigApiController extends BaseController {
                 setUrl(js);
             }
         } else {
-            setUrl(js);
-        }
-        //域名无效，则通过用户id
-        if (userId != null) {
-            SysUserExt sysUserExt = sysUserExtService.selectSysUserExtByUserId(userId);
-            if (sysUserExt != null) {
-                getShopUrl(userId, js, sysUserExt);
-            }else {
+            //域名无效，则通过用户id
+            if (userId != null) {
+                SysUserExt sysUserExt = sysUserExtService.selectSysUserExtByUserId(userId);
+                if (sysUserExt != null) {
+                    getShopUrl(userId, js, sysUserExt);
+                }else {
+                    setUrl(js);
+                }
+            } else {
                 setUrl(js);
             }
-        } else {
-            setUrl(js);
         }
         return R.ok(js);
     }
