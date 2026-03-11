@@ -31,24 +31,24 @@ values ('新用户注册赠送100积分活动', '0', 100, now(), date_add(now(),
 select @parentId := menu_id from sys_menu where menu_name = '视频管理';
 
 -- 插入菜单
-insert into sys_menu (menu_name, parent_id, order_num, url, menu_type, visible, is_refresh, perms, icon, create_by, create_time, update_by, update_time, remark)
-values ('注册活动配置', @parentId, '10', '/video/regActivityConfig', 'C', '0', '1', 'video:regActivityConfig:view', '#', 'admin', now(), '', now(), '注册活动配置菜单');
+insert into sys_menu (menu_name, parent_id, order_num, path, component, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values ('注册活动配置', @parentId, '10', '/video/regActivityConfig', 'video/regActivityConfig/index', 'C', '0', '0', 'video:regActivityConfig:view', '#', 'admin', now(), '', now(), '注册活动配置菜单');
 
 -- 查看按钮父菜单ID
 select @parentId := last_insert_id();
 
 -- 按钮父菜单ID
-insert into sys_menu (menu_name, parent_id, order_num, url, menu_type, visible, is_refresh, perms, icon, create_by, create_time, update_by, update_time, remark)
-values ('注册活动配置查询', @parentId, '1', '#', 'F', '0', '1', 'video:regActivityConfig:list', '#', 'admin', now(), '', now(), '');
+insert into sys_menu (menu_name, parent_id, order_num, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values ('注册活动配置查询', @parentId, '1', 'F', '0', '0', 'video:regActivityConfig:list', '#', 'admin', now(), '', now(), '');
 
-insert into sys_menu (menu_name, parent_id, order_num, url, menu_type, visible, is_refresh, perms, icon, create_by, create_time, update_by, update_time, remark)
-values ('注册活动配置新增', @parentId, '2', '#', 'F', '0', '1', 'video:regActivityConfig:add', '#', 'admin', now(), '', now(), '');
+insert into sys_menu (menu_name, parent_id, order_num, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values ('注册活动配置新增', @parentId, '2', 'F', '0', '0', 'video:regActivityConfig:add', '#', 'admin', now(), '', now(), '');
 
-insert into sys_menu (menu_name, parent_id, order_num, url, menu_type, visible, is_refresh, perms, icon, create_by, create_time, update_by, update_time, remark)
-values ('注册活动配置修改', @parentId, '3', '#', 'F', '0', '1', 'video:regActivityConfig:edit', '#', 'admin', now(), '', now(), '');
+insert into sys_menu (menu_name, parent_id, order_num, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values ('注册活动配置修改', @parentId, '3', 'F', '0', '0', 'video:regActivityConfig:edit', '#', 'admin', now(), '', now(), '');
 
-insert into sys_menu (menu_name, parent_id, order_num, url, menu_type, visible, is_refresh, perms, icon, create_by, create_time, update_by, update_time, remark)
-values ('注册活动配置删除', @parentId, '4', '#', 'F', '0', '1', 'video:regActivityConfig:remove', '#', 'admin', now(), '', now(), '');
+insert into sys_menu (menu_name, parent_id, order_num, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values ('注册活动配置删除', @parentId, '4', 'F', '0', '0', 'video:regActivityConfig:remove', '#', 'admin', now(), '', now(), '');
 
-insert into sys_menu (menu_name, parent_id, order_num, url, menu_type, visible, is_refresh, perms, icon, create_by, create_time, update_by, update_time, remark)
-values ('注册活动配置导出', @parentId, '5', '#', 'F', '0', '1', 'video:regActivityConfig:export', '#', 'admin', now(), '', now(), '');
+insert into sys_menu (menu_name, parent_id, order_num, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+values ('注册活动配置导出', @parentId, '5', 'F', '0', '0', 'video:regActivityConfig:export', '#', 'admin', now(), '', now(), '');
