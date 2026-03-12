@@ -175,7 +175,20 @@ export const dynamicRoutes = [
          meta: { title: '广告数据', activeMenu: '/video/video' }
        }
      ]
-   }
+   },
+  {
+    path: '/video/play',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: ':id(\\d+)',
+        component: () => import('@/views/video/play/index'),
+        name: 'VideoPlay',
+        meta: { title: '视频播放', activeMenu: '/video/video' }
+      }
+    ]
+  }
 ]
 
 // 防止连续点击多次路由报错
