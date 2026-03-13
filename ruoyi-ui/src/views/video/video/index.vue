@@ -177,13 +177,13 @@
           <file-upload v-model="form.url" :limit="1" :fileSize="500" :fileType="['mp4', 'avi', 'rmvb']"/>
         </el-form-item>
         <el-form-item label="视频url" prop="url">
-          <el-input v-model="form.url" placeholder="请输入内容"/>
+          <el-input v-model.trim="form.url" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="视频图片" prop="appFile">
           <file-upload v-model="form.img" :limit="1" :fileSize="50" :fileType="['jpg','jpeg','bmp','gif','png']"/>
         </el-form-item>
         <el-form-item label="视频标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入视频标题"/>
+          <el-input v-model.trim="form.title" placeholder="请输入视频标题"/>
         </el-form-item>
         <el-form-item label="播放量" prop="playNum">
           <el-input v-model="form.playNum" placeholder="播放量"/>
@@ -302,6 +302,68 @@ export default {
       },
       // 表单校验
       rules: {
+        title: [
+          { required: true, message: "视频标题不能为空", trigger: "blur" },
+          { min: 1, max: 100, message: "标题长度需在 1-100 字符之间", trigger: "blur" },
+          { 
+            pattern: /^[\u4e00-\u9fa5a-zA-Z0-9\-_]+$/, 
+            message: "标题包含非法特殊字符，仅允许中文、英文、数字、-_", 
+            trigger: "blur" 
+          }
+        ],
+        url: [
+          { required: true, message: "视频 URL 不能为空", trigger: "blur" },
+          { max: 500, message: "视频 URL 长度不能超过 500 字符", trigger: "blur" },
+          { 
+            pattern: /^https?:\/\/.+\.(mp4|avi|mov|rmvb|flv|wmv|mkv)$/i, 
+            message: "视频 URL 格式错误，仅支持 mp4/avi/mov/rmvb/flv/wmv/mkv 格式", 
+            trigger: "blur" 
+          }
+        ],
+        type: [
+          { required: true, message: "视频类型不能为空", trigger: "change" }
+        ],
+        money: [
+          { 
+            validator: (rule, value, callback) => {
+              const type = this.form.type;
+              const moneyValue = parseInt(value) || 0;
+              
+              if (type === '2') {
+                if (!value || moneyValue <= 0) {
+                  callback(new Error("收费视频的金额不能为空且必须大于 0"));
+                } else if (moneyValue > 9999) {
+                  callback(new Error("金额不能超过 9999"));
+                } else {
+                  callback();
+                }
+              } else if (type === '1' || type === '3') {
+                if (moneyValue !== 0) {
+                  callback(new Error("非收费视频类型的金额需为 0"));
+                } else {
+                  callback();
+                }
+              } else {
+                callback();
+              }
+            }, 
+            trigger: "blur" 
+          }
+        ],
+        playNum: [
+          { 
+            pattern: /^[0-9]*$/, 
+            message: "播放量必须为数字", 
+            trigger: "blur" 
+          }
+        ],
+        likeNum: [
+          { 
+            pattern: /^[0-9]*$/, 
+            message: "点赞量必须为数字", 
+            trigger: "blur" 
+          }
+        ]
       }
     };
   },
@@ -425,6 +487,15 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          const form = this.form;
+          const type = form.type;
+          const money = parseInt(form.money) || 0;
+          const adList = form.adList;
+          
+          if (!this.validateTypeLogic(type, money, adList)) {
+            return;
+          }
+          
           if (this.form.id != null) {
             this.form.category = this.getAllCheckedKeys().join(",");
             updateVideo(this.form).then(response => {
@@ -442,6 +513,43 @@ export default {
           }
         }
       });
+    },
+    validateTypeLogic(type, money, adList) {
+      const hasAdList = adList && adList.length > 0;
+      
+      switch (type) {
+        case '1':
+          if (hasAdList) {
+            this.$modal.msgError("免费无广告视频的广告列表必须为空");
+            return false;
+          }
+          if (money !== 0) {
+            this.$modal.msgError("免费无广告视频的金额必须为 0");
+            return false;
+          }
+          break;
+        case '2':
+          if (money <= 0) {
+            this.$modal.msgError("收费视频的金额必须大于 0");
+            return false;
+          }
+          break;
+        case '3':
+          if (!hasAdList) {
+            this.$modal.msgError("免费有广告视频的广告列表不能为空");
+            return false;
+          }
+          if (money !== 0) {
+            this.$modal.msgError("免费有广告视频的金额必须为 0");
+            return false;
+          }
+          break;
+        default:
+          this.$modal.msgError("视频类型不合法，仅支持免费无广告、收费视频、免费有广告");
+          return false;
+      }
+      
+      return true;
     },
     /** 删除按钮操作 */
     handleDelete(row) {
