@@ -1,6 +1,10 @@
 package com.ruoyi.framework.web.service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -52,6 +56,48 @@ public class SysLoginService
     @Autowired
     private ISysConfigService configService;
 
+    private static final int MAX_LOGIN_FAIL_COUNT = 5;
+
+    private String getAppLoginFailCacheKey(String username)
+    {
+        return CacheConstants.APP_LOGIN_FAIL_CNT_KEY + DateUtils.dateTime() + ":" + username;
+    }
+
+    private long getSecondsUntilMidnight()
+    {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime midnight = LocalDateTime.now().with(LocalTime.MAX).plusNanos(1);
+        return ChronoUnit.SECONDS.between(now, midnight);
+    }
+
+    private void checkAppLoginFailCount(String username)
+    {
+        String cacheKey = getAppLoginFailCacheKey(username);
+        Integer failCount = redisCache.getCacheObject(cacheKey);
+        if (failCount != null && failCount >= MAX_LOGIN_FAIL_COUNT)
+        {
+            throw new ServiceException("登录失败次数过多，账号已被临时锁定，请次日再试。");
+        }
+    }
+
+    private void recordAppLoginFail(String username)
+    {
+        String cacheKey = getAppLoginFailCacheKey(username);
+        Integer failCount = redisCache.getCacheObject(cacheKey);
+        if (failCount == null)
+        {
+            failCount = 0;
+        }
+        failCount = failCount + 1;
+        redisCache.setCacheObject(cacheKey, failCount, (int) getSecondsUntilMidnight(), TimeUnit.SECONDS);
+    }
+
+    private void clearAppLoginFailCount(String username)
+    {
+        String cacheKey = getAppLoginFailCacheKey(username);
+        redisCache.deleteObject(cacheKey);
+    }
+
     /**
      * 登录验证
      * 
@@ -63,31 +109,14 @@ public class SysLoginService
      */
     public String login(String username, String password, String code, String uuid)
     {
-        // 验证码校验
-        validateCaptcha(username, code, uuid);
-        // 登录前置校验
-        loginPreCheck(username, password);
-        // 用户验证
         Authentication authentication = null;
         try
         {
+            validateCaptcha(username, code, uuid);
+            loginPreCheck(username, password);
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
             AuthenticationContextHolder.setContext(authenticationToken);
-            // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername
             authentication = authenticationManager.authenticate(authenticationToken);
-        }
-        catch (Exception e)
-        {
-            if (e instanceof BadCredentialsException)
-            {
-                AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.password.not.match")));
-                throw new UserPasswordNotMatchException();
-            }
-            else
-            {
-                AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, e.getMessage()));
-                throw new ServiceException(e.getMessage());
-            }
         }
         finally
         {
@@ -96,7 +125,43 @@ public class SysLoginService
         AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         recordLoginInfo(loginUser.getUserId());
-        // 生成token
+        return tokenService.createToken(loginUser);
+    }
+
+    /**
+     * APP登录验证
+     * 
+     * @param username 用户名
+     * @param password 密码
+     * @param code 验证码
+     * @param uuid 唯一标识
+     * @return 结果
+     */
+    public String appLogin(String username, String password, String code, String uuid)
+    {
+        checkAppLoginFailCount(username);
+        Authentication authentication = null;
+        try
+        {
+            validateCaptcha(username, code, uuid);
+            loginPreCheck(username, password);
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+            AuthenticationContextHolder.setContext(authenticationToken);
+            authentication = authenticationManager.authenticate(authenticationToken);
+        }
+        catch (Exception e)
+        {
+            recordAppLoginFail(username);
+            throw e;
+        }
+        finally
+        {
+            AuthenticationContextHolder.clearContext();
+        }
+        clearAppLoginFailCount(username);
+        AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        recordLoginInfo(loginUser.getUserId());
         return tokenService.createToken(loginUser);
     }
 

@@ -141,7 +141,7 @@ public class UserApiController extends BaseController {
     @Anonymous
     public R login(@RequestBody LoginBody loginBody) {
         // 生成令牌
-        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
+        String token = loginService.appLogin(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
                 loginBody.getUuid());
         Map map = new HashMap<>();
         map.put(Constants.TOKEN, token);
