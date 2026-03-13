@@ -13,11 +13,19 @@ public interface VideoMapper
 {
     /**
      * 查询视频
-     * 
+     *
      * @param id 视频主键
      * @return 视频
      */
     public Video selectVideoById(Long id);
+
+    /**
+     * 根据标题查询视频
+     *
+     * @param title 视频标题
+     * @return 视频
+     */
+    public Video selectVideoByTitle(String title);
 
     /**
      * 查询视频列表

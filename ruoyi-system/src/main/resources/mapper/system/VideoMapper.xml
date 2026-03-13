@@ -58,6 +58,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
 
+    <select id="selectVideoByTitle" parameterType="String" resultMap="VideoResult">
+        <include refid="selectVideoVo"/>
+        where title = #{title}
+    </select>
+
     <insert id="insertVideo" parameterType="Video" useGeneratedKeys="true" keyProperty="id">
         insert into v_video
         <trim prefix="(" suffix=")" suffixOverrides=",">
