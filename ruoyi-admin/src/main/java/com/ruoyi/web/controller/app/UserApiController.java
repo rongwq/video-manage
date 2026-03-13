@@ -9,10 +9,12 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginBody;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.CdkeyStatus;
+import com.ruoyi.common.exception.user.UserPasswordNotMatchException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
+import com.ruoyi.framework.web.service.AppLoginRetryService;
 import com.ruoyi.framework.web.service.SysLoginService;
 import com.ruoyi.system.domain.AdUseRecord;
 import com.ruoyi.system.domain.Cdkey;
@@ -55,6 +57,8 @@ public class UserApiController extends BaseController {
     private SysLoginService loginService;
     @Autowired
     private IAdUseRecordService adUseRecordService;
+    @Autowired
+    private AppLoginRetryService appLoginRetryService;
 
     @ApiOperation("获取用户详细")
     @ApiImplicitParam(name = "userName", value = "用户账号", required = true, dataType = "int", paramType = "path", dataTypeClass = Integer.class)
@@ -140,12 +144,19 @@ public class UserApiController extends BaseController {
     @Log(title = "用户登录", businessType = BusinessType.INSERT)
     @Anonymous
     public R login(@RequestBody LoginBody loginBody) {
-        // 生成令牌
-        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
-                loginBody.getUuid());
-        Map map = new HashMap<>();
-        map.put(Constants.TOKEN, token);
-        return R.ok(map);
+        String username = loginBody.getUsername();
+        appLoginRetryService.checkLocked(username);
+        try {
+            String token = loginService.login(username, loginBody.getPassword(), loginBody.getCode(),
+                    loginBody.getUuid());
+            appLoginRetryService.clearLoginFailCount(username);
+            Map map = new HashMap<>();
+            map.put(Constants.TOKEN, token);
+            return R.ok(map);
+        } catch (UserPasswordNotMatchException e) {
+            appLoginRetryService.recordLoginFail(username);
+            throw e;
+        }
     }
 
     /**
