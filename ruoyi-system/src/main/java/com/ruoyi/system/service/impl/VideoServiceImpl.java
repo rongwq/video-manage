@@ -82,6 +82,8 @@ public class VideoServiceImpl implements IVideoService
     @Override
     public int insertVideo(Video video)
     {
+        trimVideoFields(video);
+        validateVideo(video, true);
         video.setCreateTime(DateUtils.getNowDate());
         return VideoMapper.insertVideo(video);
     }
@@ -95,6 +97,8 @@ public class VideoServiceImpl implements IVideoService
     @Override
     public int updateVideo(Video video)
     {
+        trimVideoFields(video);
+        validateVideo(video, false);
         video.setUpdateTime(DateUtils.getNowDate());
         return VideoMapper.updateVideo(video);
     }
@@ -136,6 +140,87 @@ public class VideoServiceImpl implements IVideoService
     @Override
     public int updatePlayNum(Long id) {
         return VideoMapper.updatePlayNum(id);
+    }
+
+    private void trimVideoFields(Video video)
+    {
+        if (StringUtils.isNotEmpty(video.getTitle()))
+        {
+            video.setTitle(video.getTitle().trim());
+        }
+        if (StringUtils.isNotEmpty(video.getUrl()))
+        {
+            video.setUrl(video.getUrl().trim());
+        }
+        if (StringUtils.isNotEmpty(video.getCategory()))
+        {
+            video.setCategory(video.getCategory().trim());
+        }
+    }
+
+    private void validateVideo(Video video, boolean isAdd)
+    {
+        BeanValidators.validateWithException(validator, video);
+        validateTitleUnique(video.getTitle(), video.getId(), isAdd);
+        validateTypeAndMoney(video);
+    }
+
+    private void validateTitleUnique(String title, Long id, boolean isAdd)
+    {
+        Video query = new Video();
+        query.setTitle(title);
+        List<Video> list = VideoMapper.selectVideoList(query);
+        if (isAdd)
+        {
+            if (list.size() > 0)
+            {
+                throw new ServiceException("视频标题已存在");
+            }
+        }
+        else
+        {
+            if (list.size() > 0 && !list.get(0).getId().equals(id))
+            {
+                throw new ServiceException("视频标题已存在");
+            }
+        }
+    }
+
+    private void validateTypeAndMoney(Video video)
+    {
+        String type = video.getType();
+        Integer money = video.getMoney() == null ? 0 : video.getMoney();
+        
+        if ("2".equals(type))
+        {
+            if (video.getMoney() == null || money <= 0)
+            {
+                throw new ServiceException("收费视频金额必须大于0");
+            }
+        }
+        else
+        {
+            if (money != 0)
+            {
+                throw new ServiceException("免费视频金额需为0");
+            }
+        }
+        
+        if ("3".equals(type))
+        {
+            if (video.getAdList() == null || video.getAdList().isEmpty())
+            {
+                throw new ServiceException("免费有广告视频广告列表不能为空");
+            }
+        }
+        
+        if ("1".equals(type))
+        {
+            if (video.getAdList() != null && !video.getAdList().isEmpty())
+            {
+                throw new ServiceException("免费无广告视频广告列表必须为空");
+            }
+        }
     }
 
     @Override
