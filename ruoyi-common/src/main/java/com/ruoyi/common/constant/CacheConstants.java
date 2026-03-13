@@ -41,4 +41,9 @@ public class CacheConstants
      * 登录账户密码错误次数 redis key
      */
     public static final String PWD_ERR_CNT_KEY = "pwd_err_cnt:";
+
+    /**
+     * APP登录失败次数 redis key (按自然日统计)
+     */
+    public static final String APP_LOGIN_FAIL_CNT_KEY = "app_login_fail_cnt:";
 }
