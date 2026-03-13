@@ -164,7 +164,7 @@
           ></el-tree>
         </el-form-item>
         <el-form-item label="视频类型" prop="type">
-          <el-radio-group v-model="form.type">
+          <el-radio-group v-model="form.type" @change="handleTypeChange">
             <el-radio
               v-for="dict in dict.type.video_type"
               :key="dict.value"
@@ -186,13 +186,13 @@
           <el-input v-model="form.title" placeholder="请输入视频标题"/>
         </el-form-item>
         <el-form-item label="播放量" prop="playNum">
-          <el-input v-model="form.playNum" placeholder="播放量"/>
+          <el-input v-model="form.playNum" placeholder="播放量" oninput="value=value.replace(/[^\d]/g,'')"/>
         </el-form-item>
         <el-form-item label="点赞量" prop="likeNum">
-          <el-input v-model="form.likeNum" placeholder="点赞量"/>
+          <el-input v-model="form.likeNum" placeholder="点赞量" oninput="value=value.replace(/[^\d]/g,'')"/>
         </el-form-item>
         <el-form-item label="金币" prop="money">
-          <el-input v-model="form.money" placeholder="金币"/>
+          <el-input v-model="form.money" placeholder="金币" oninput="value=value.replace(/[^\d]/g,'')"/>
         </el-form-item>
         <el-form-item label="描述" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入描述"/>
@@ -245,6 +245,35 @@ export default {
   name: "Video",
   dicts: ['video_type','video_category'],
   data() {
+    const validateMoney = (rule, value, callback) => {
+      let money = value == null ? 0 : parseInt(value);
+      if (isNaN(money)) {
+        callback(new Error("金额必须为数字"));
+      } else if (money < 0) {
+        callback(new Error("金额必须大于等于0"));
+      } else if (money > 9999) {
+        callback(new Error("金额不能超过9999"));
+      } else if (this.form.type === "2") {
+        if (money <= 0) {
+          callback(new Error("收费视频金额必须大于0"));
+        } else {
+          callback();
+        }
+      } else {
+        if (money !== 0) {
+          callback(new Error("免费视频金额需为0"));
+        } else {
+          callback();
+        }
+      }
+    };
+    const validateNumber = (rule, value, callback) => {
+      if (value != null && value !== "" && isNaN(parseInt(value))) {
+        callback(new Error("请输入数字"));
+      } else {
+        callback();
+      }
+    };
     return {
       // 遮罩层
       loading: true,
@@ -302,6 +331,28 @@ export default {
       },
       // 表单校验
       rules: {
+        title: [
+          { required: true, message: "视频标题不能为空", trigger: "blur" },
+          { min: 1, max: 100, message: "标题长度需在1-100字符之间", trigger: "blur" },
+          { pattern: /^[\u4e00-\u9fa5a-zA-Z0-9_-]+$/, message: "标题包含非法特殊字符，仅允许中文、英文、数字、-_", trigger: "blur" }
+        ],
+        url: [
+          { required: true, message: "视频URL不能为空", trigger: "blur" },
+          { max: 500, message: "视频URL长度不能超过500字符", trigger: "blur" },
+          { pattern: /^(http|https):\/\/.*\.(mp4|avi|mov|rmvb|flv|wmv)$/, message: "视频URL格式错误，仅支持mp4/avi/mov等格式", trigger: "blur" }
+        ],
+        money: [
+          { validator: validateMoney, trigger: "blur" }
+        ],
+        playNum: [
+          { validator: validateNumber, trigger: "blur" }
+        ],
+        likeNum: [
+          { validator: validateNumber, trigger: "blur" }
+        ],
+        type: [
+          { required: true, message: "请选择视频类型", trigger: "change" }
+        ]
       }
     };
   },
@@ -314,6 +365,19 @@ export default {
       treeSelect().then(response => {
         this.categoryOptions = response.data;
       });
+    },
+    handleTypeChange() {
+      this.$nextTick(() => {
+        this.$refs["form"].validateField("money");
+      });
+    },
+    trimFormFields() {
+      if (this.form.title) {
+        this.form.title = this.form.title.trim();
+      }
+      if (this.form.url) {
+        this.form.url = this.form.url.trim();
+      }
     },
     // 所有菜单节点数据-查询条件
     getAllCheckedKeysSearch() {
@@ -423,6 +487,7 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
+      this.trimFormFields();
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {

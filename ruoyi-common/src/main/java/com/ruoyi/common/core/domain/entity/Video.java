@@ -4,6 +4,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.Data;
 
+import javax.validation.constraints.*;
 import java.util.List;
 
 /**
@@ -26,10 +27,16 @@ public class Video extends BaseEntity
 
     /** 视频url */
     @Excel(name = "视频url")
+    @NotBlank(message = "视频URL不能为空")
+    @Size(max = 500, message = "视频URL长度不能超过500字符")
+    @Pattern(regexp = "^(http|https)://.*\\.(mp4|avi|mov|rmvb|flv|wmv)$", message = "视频URL格式错误，仅支持mp4/avi/mov等格式")
     private String url;
 
     /** 视频标题 */
     @Excel(name = "视频标题")
+    @NotBlank(message = "视频标题不能为空")
+    @Size(min = 1, max = 100, message = "标题长度需在1-100字符之间")
+    @Pattern(regexp = "^[\\u4e00-\\u9fa5a-zA-Z0-9_-]+$", message = "标题包含非法特殊字符，仅允许中文、英文、数字、-_")
     private String title;
 
     /** 视频分类 */
@@ -63,6 +70,7 @@ public class Video extends BaseEntity
 
     /** 收费视频金额 */
     @Excel(name = "收费视频金额")
+    @Max(value = 9999, message = "金额不能超过9999")
     private Integer money;
 
     /** 是否购买 */
