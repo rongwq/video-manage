@@ -7,6 +7,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.VideoValidationUtils;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,26 +76,44 @@ public class VideoServiceImpl implements IVideoService
 
     /**
      * 新增视频
-     * 
+     *
      * @param video 视频
      * @return 结果
      */
     @Override
     public int insertVideo(Video video)
     {
+        // 执行字段校验
+        VideoValidationUtils.validateAndThrow(video, VideoValidationUtils.ValidationScene.ADD);
+
+        // 校验标题唯一性
+        Video existVideo = VideoMapper.selectVideoByTitle(video.getTitle());
+        if (existVideo != null) {
+            throw new ServiceException("视频标题已存在，请更换标题");
+        }
+
         video.setCreateTime(DateUtils.getNowDate());
         return VideoMapper.insertVideo(video);
     }
 
     /**
      * 修改视频
-     * 
+     *
      * @param video 视频
      * @return 结果
      */
     @Override
     public int updateVideo(Video video)
     {
+        // 执行字段校验
+        VideoValidationUtils.validateAndThrow(video, VideoValidationUtils.ValidationScene.UPDATE);
+
+        // 校验标题唯一性（排除自身）
+        Video existVideo = VideoMapper.selectVideoByTitle(video.getTitle());
+        if (existVideo != null && !existVideo.getId().equals(video.getId())) {
+            throw new ServiceException("视频标题已被其他视频使用，请更换标题");
+        }
+
         video.setUpdateTime(DateUtils.getNowDate());
         return VideoMapper.updateVideo(video);
     }

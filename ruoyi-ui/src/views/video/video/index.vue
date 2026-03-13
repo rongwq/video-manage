@@ -240,6 +240,7 @@
 import { listVideo, getVideo, delVideo, addVideo, updateVideo } from "@/api/video/video";
 import { treeSelect } from "@/api/video/category";
 import { getToken } from "@/utils/auth";
+import { generateFormRulesWithForm, validateVideo, ValidationScene } from "@/utils/videoValidation";
 
 export default {
   name: "Video",
@@ -301,8 +302,7 @@ export default {
         label: "label"
       },
       // 表单校验
-      rules: {
-      }
+      rules: generateFormRulesWithForm(() => this.form)
     };
   },
   created() {
@@ -425,6 +425,15 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          // 执行自定义校验逻辑
+          const scene = this.form.id != null ? ValidationScene.UPDATE : ValidationScene.ADD;
+          const validationResult = validateVideo(this.form, scene);
+
+          if (!validationResult.valid) {
+            this.$modal.msgError(validationResult.errors.join("；"));
+            return;
+          }
+
           if (this.form.id != null) {
             this.form.category = this.getAllCheckedKeys().join(",");
             updateVideo(this.form).then(response => {
