@@ -32,6 +32,20 @@ export const constantRoutes = [
     hidden: true,
     meta: { title: '页面不存在' }
   },
+  {
+    path: '/app/user/login',
+    name: 'AppUserLogin',
+    component: () => import('@/views/app/user/app-user-login'),
+    hidden: true,
+    meta: { title: 'APP登录' }
+  },
+  {
+    path: '/app/user/register',
+    name: 'AppUserRegister',
+    component: () => import('@/views/app/user/app-user-register'),
+    hidden: true,
+    meta: { title: 'APP注册' }
+  },
   // 404页面必须放在最后
   { path: '*', redirect: '/404', hidden: true }
 ]
@@ -44,7 +58,7 @@ const router = new Router({
 })
 
 // 白名单
-const whiteList = ['/login', '/404']
+const whiteList = ['/login', '/404', '/app/user/login', '/app/user/register']
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
