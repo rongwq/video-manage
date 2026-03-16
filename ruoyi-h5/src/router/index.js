@@ -44,7 +44,7 @@ const router = new Router({
 })
 
 // 白名单
-const whiteList = ['/login', '/404']
+const whiteList = ['/login', '/404', '/app/user/login', '/app/user/register']
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
