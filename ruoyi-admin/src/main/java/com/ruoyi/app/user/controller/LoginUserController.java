@@ -102,10 +102,17 @@ public class LoginUserController extends BaseController
      */
     private com.ruoyi.common.core.domain.model.LoginUser createLoginUser(AppUser appUser)
     {
+        // 创建SysUser对象来适配LoginUser
+        com.ruoyi.common.core.domain.entity.SysUser sysUser = new com.ruoyi.common.core.domain.entity.SysUser();
+        sysUser.setUserId(appUser.getUserId());
+        sysUser.setUserName(appUser.getUserName());
+        sysUser.setNickName(appUser.getNickName());
+        sysUser.setPassword(appUser.getPassword());
+        sysUser.setStatus(appUser.getStatus());
+        
         com.ruoyi.common.core.domain.model.LoginUser loginUser = new com.ruoyi.common.core.domain.model.LoginUser();
         loginUser.setUserId(appUser.getUserId());
-        loginUser.setUsername(appUser.getUserName());
-        loginUser.setUserType("app"); // 标记为APP用户类型
+        loginUser.setUser(sysUser);
         return loginUser;
     }
 }

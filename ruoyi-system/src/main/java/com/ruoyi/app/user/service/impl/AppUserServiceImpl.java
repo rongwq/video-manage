@@ -81,6 +81,19 @@ public class AppUserServiceImpl implements IAppUserService
     }
 
     /**
+     * 新增用户信息
+     *
+     * @param appUser 用户信息
+     * @return 结果
+     */
+    @Override
+    @DataSource(DataSourceType.MASTER)
+    public int insertAppUser(AppUser appUser)
+    {
+        return appUserMapper.insertAppUser(appUser);
+    }
+
+    /**
      * 修改用户信息
      *
      * @param appUser 用户信息

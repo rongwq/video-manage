@@ -24,26 +24,25 @@ public class AppSecurityConfig
     @Order(1)
     public SecurityFilterChain appSecurityFilterChain(HttpSecurity http) throws Exception
     {
-        return http
-                // 配置只对/app/api路径生效
-                .securityMatcher("/app/api/**")
-                // CSRF禁用
-                .csrf(csrf -> csrf.disable())
-                // 禁用HTTP响应标头
-                .headers((headersCustomizer) -> {
-                    headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());
-                })
-                // 基于token，不需要session
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // 配置请求授权
-                .authorizeHttpRequests((requests) -> {
-                    // APP用户注册、登录接口允许匿名访问
-                    requests.antMatchers("/app/api/user/register", "/app/api/user/login").permitAll()
-                            // APP用户列表查询允许匿名访问（可根据需求调整）
-                            .antMatchers("/app/api/user/list").permitAll()
-                            // 其他APP接口需要认证
-                            .anyRequest().authenticated();
-                })
-                .build();
+        http
+            // CSRF禁用
+            .csrf(csrf -> csrf.disable())
+            // 禁用HTTP响应标头
+            .headers((headersCustomizer) -> {
+                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());
+            })
+            // 基于token，不需要session
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            // 配置请求授权
+            .authorizeHttpRequests((requests) -> {
+                // APP用户注册、登录接口允许匿名访问
+                requests.requestMatchers("/app/api/user/register").permitAll()
+                        .requestMatchers("/app/api/user/login").permitAll()
+                        // APP用户列表查询允许匿名访问（可根据需求调整）
+                        .requestMatchers("/app/api/user/list").permitAll()
+                        // 其他APP接口需要认证
+                        .anyRequest().authenticated();
+            });
+        return http.build();
     }
 }

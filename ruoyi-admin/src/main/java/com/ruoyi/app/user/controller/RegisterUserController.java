@@ -80,7 +80,7 @@ public class RegisterUserController extends BaseController
         }
 
         // 设置默认状态
-        appUser.setStatus(UserConstants.OK);
+        appUser.setStatus(UserConstants.NORMAL);
 
         boolean result = appUserService.registerAppUser(appUser);
         if (result)
