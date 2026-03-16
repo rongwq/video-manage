@@ -32,20 +32,6 @@ export const constantRoutes = [
     name: 'AppUserLogin',
     component: () => import('@/views/app/user/app-user-login'),
     hidden: true,
-    meta: { title: 'APP用户登录' }
-  },
-  // APP用户注册页面
-  {
-    path: '/app/user/register',
-    name: 'AppUserRegister',
-    component: () => import('@/views/app/user/app-user-register'),
-    hidden: true,
-    meta: { title: 'APP用户注册' }
-  },
-  {
-    path: '/404',
-    component: () => import('@/views/error/404'),
-    hidden: true,
     meta: { title: '页面不存在' }
   },
   // 404页面必须放在最后
@@ -58,7 +44,7 @@ const router = new Router({
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
-
+const whiteList = ['/login', '/404']
 // 白名单（不需要登录的页面）
 const whiteList = ['/login', '/404', '/app/user/login', '/app/user/register']
 
