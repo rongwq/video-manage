@@ -90,4 +90,11 @@ public interface VideoMapper
      * @return
      */
     int updatePlayNum(Long id);
+
+    /**
+     * 根据标题查询视频
+     * @param title 视频标题
+     * @return 视频对象
+     */
+    Video selectVideoByTitle(String title);
 }

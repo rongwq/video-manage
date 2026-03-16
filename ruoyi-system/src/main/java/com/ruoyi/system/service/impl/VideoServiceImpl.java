@@ -82,6 +82,7 @@ public class VideoServiceImpl implements IVideoService
     @Override
     public int insertVideo(Video video)
     {
+        validateTitleUnique(video.getTitle(), null);
         video.setCreateTime(DateUtils.getNowDate());
         return VideoMapper.insertVideo(video);
     }
@@ -95,8 +96,27 @@ public class VideoServiceImpl implements IVideoService
     @Override
     public int updateVideo(Video video)
     {
+        validateTitleUnique(video.getTitle(), video.getId());
         video.setUpdateTime(DateUtils.getNowDate());
         return VideoMapper.updateVideo(video);
+    }
+
+    /**
+     * 校验标题唯一性
+     * 
+     * @param title 视频标题
+     * @param excludeId 排除的视频ID（修改时排除自身）
+     */
+    private void validateTitleUnique(String title, Long excludeId)
+    {
+        if (StringUtils.isNotEmpty(title))
+        {
+            Video existingVideo = VideoMapper.selectVideoByTitle(title.trim());
+            if (existingVideo != null && !existingVideo.getId().equals(excludeId))
+            {
+                throw new ServiceException("视频标题 '" + title + "' 已存在");
+            }
+        }
     }
 
     /**

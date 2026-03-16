@@ -8,7 +8,9 @@ import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.entity.VideoAd;
 import com.ruoyi.common.core.domain.entity.VideoCategory;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.VideoValidator;
 import com.ruoyi.system.service.IVideoAdService;
 import com.ruoyi.system.service.IVideoCategoryService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -109,7 +111,12 @@ public class VideoController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody Video video)
     {
-        return toAjax(VideoService.insertVideo(video));
+        try {
+            VideoValidator.validateVideo(video, false);
+            return toAjax(VideoService.insertVideo(video));
+        } catch (ServiceException e) {
+            return AjaxResult.error(e.getMessage());
+        }
     }
 
     /**
@@ -120,7 +127,15 @@ public class VideoController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody Video video)
     {
-        return toAjax(VideoService.updateVideo(video));
+        try {
+            if (video.getId() == null) {
+                return AjaxResult.error("视频ID不能为空");
+            }
+            VideoValidator.validateVideo(video, true);
+            return toAjax(VideoService.updateVideo(video));
+        } catch (ServiceException e) {
+            return AjaxResult.error(e.getMessage());
+        }
     }
 
     /**

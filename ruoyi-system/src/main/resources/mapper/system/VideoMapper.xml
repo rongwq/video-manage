@@ -147,4 +147,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update v_video set play_num = play_num + 1
         where id = #{id}
     </update>
+
+    <select id="selectVideoByTitle" parameterType="String" resultMap="VideoResult">
+        <include refid="selectVideoVo"/>
+        where title = #{title}
+        limit 1
+    </select>
 </mapper>
