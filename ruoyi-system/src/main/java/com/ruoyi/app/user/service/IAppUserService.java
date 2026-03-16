@@ -43,6 +43,14 @@ public interface IAppUserService
     public boolean registerAppUser(AppUser appUser);
 
     /**
+     * 新增用户信息
+     *
+     * @param appUser 用户信息
+     * @return 结果
+     */
+    public int insertAppUser(AppUser appUser);
+
+    /**
      * 修改用户信息
      *
      * @param appUser 用户信息
