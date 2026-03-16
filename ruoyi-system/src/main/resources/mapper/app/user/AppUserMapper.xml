@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.app.user.mapper.AppUserMapper">
+
+    <resultMap type="com.ruoyi.app.user.domain.AppUser" id="AppUserResult">
+        <id property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="email" column="email"/>
+        <result property="phonenumber" column="phonenumber"/>
+        <result property="sex" column="sex"/>
+        <result property="avatar" column="avatar"/>
+        <result property="password" column="password"/>
+        <result property="status" column="status"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="loginIp" column="login_ip"/>
+        <result property="loginDate" column="login_date"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectAppUserVo">
+        select user_id, user_name, nick_name, email, phonenumber, sex, avatar, password, status, del_flag, login_ip, login_date, create_by, create_time, update_by, update_time, remark
+        from app_user
+    </sql>
+
+    <select id="selectAppUserList" parameterType="com.ruoyi.app.user.domain.AppUser" resultMap="AppUserResult">
+        <include refid="selectAppUserVo"/>
+        <where>
+            <if test="userName != null and userName != ''">
+                AND user_name like concat('%', #{userName}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="phonenumber != null and phonenumber != ''">
+                AND phonenumber like concat('%', #{phonenumber}, '%')
+            </if>
+            <if test="params.beginTime != null and params.beginTime != ''">
+                AND date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                AND date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAppUserByUserName" parameterType="String" resultMap="AppUserResult">
+        <include refid="selectAppUserVo"/>
+        where user_name = #{userName} and del_flag = '0'
+    </select>
+
+    <select id="selectAppUserById" parameterType="Long" resultMap="AppUserResult">
+        <include refid="selectAppUserVo"/>
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insertAppUser" parameterType="com.ruoyi.app.user.domain.AppUser" useGeneratedKeys="true" keyProperty="userId">
+        insert into app_user (
+        <if test="userId != null and userId != 0">user_id,</if>
+        <if test="userName != null and userName != ''">user_name,</if>
+        <if test="nickName != null and nickName != ''">nick_name,</if>
+        <if test="email != null and email != ''">email,</if>
+        <if test="phonenumber != null and phonenumber != ''">phonenumber,</if>
+        <if test="sex != null and sex != ''">sex,</if>
+        <if test="avatar != null and avatar != ''">avatar,</if>
+        <if test="password != null and password != ''">password,</if>
+        <if test="status != null and status != ''">status,</if>
+        <if test="loginIp != null and loginIp != ''">login_ip,</if>
+        <if test="loginDate != null">login_date,</if>
+        <if test="createBy != null and createBy != ''">create_by,</if>
+        <if test="remark != null and remark != ''">remark,</if>
+        create_time
+        ) values (
+        <if test="userId != null and userId != 0">#{userId},</if>
+        <if test="userName != null and userName != ''">#{userName},</if>
+        <if test="nickName != null and nickName != ''">#{nickName},</if>
+        <if test="email != null and email != ''">#{email},</if>
+        <if test="phonenumber != null and phonenumber != ''">#{phonenumber},</if>
+        <if test="sex != null and sex != ''">#{sex},</if>
+        <if test="avatar != null and avatar != ''">#{avatar},</if>
+        <if test="password != null and password != ''">#{password},</if>
+        <if test="status != null and status != ''">#{status},</if>
+        <if test="loginIp != null and loginIp != ''">#{loginIp},</if>
+        <if test="loginDate != null">#{loginDate},</if>
+        <if test="createBy != null and createBy != ''">#{createBy},</if>
+        <if test="remark != null and remark != ''">#{remark},</if>
+        sysdate()
+        )
+    </insert>
+
+    <update id="updateAppUser" parameterType="com.ruoyi.app.user.domain.AppUser">
+        update app_user
+        <set>
+            <if test="userName != null and userName != ''">user_name = #{userName},</if>
+            <if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="phonenumber != null">phonenumber = #{phonenumber},</if>
+            <if test="sex != null and sex != ''">sex = #{sex},</if>
+            <if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="loginIp != null and loginIp != ''">login_ip = #{loginIp},</if>
+            <if test="loginDate != null">login_date = #{loginDate},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            update_time = sysdate()
+        </set>
+        where user_id = #{userId}
+    </update>
+
+    <update id="updateAppUserAvatar">
+        update app_user set avatar = #{avatar} where user_name = #{userName}
+    </update>
+
+    <update id="resetAppUserPwd">
+        update app_user set password = #{password} where user_name = #{userName}
+    </update>
+
+    <update id="deleteAppUserById" parameterType="Long">
+        update app_user set del_flag = '2' where user_id = #{userId}
+    </update>
+
+    <update id="deleteAppUserByIds">
+        update app_user set del_flag = '2' where user_id in
+        <foreach collection="array" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </update>
+
+    <select id="checkUserNameUnique" parameterType="String" resultType="int">
+        select count(1) from app_user where user_name = #{userName} and del_flag = '0' limit 1
+    </select>
+
+    <select id="checkPhoneUnique" parameterType="String" resultMap="AppUserResult">
+        <include refid="selectAppUserVo"/>
+        where phonenumber = #{phonenumber} and del_flag = '0' limit 1
+    </select>
+
+    <select id="checkEmailUnique" parameterType="String" resultMap="AppUserResult">
+        <include refid="selectAppUserVo"/>
+        where email = #{email} and del_flag = '0' limit 1
+    </select>
+
+</mapper>
