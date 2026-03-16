@@ -26,6 +26,22 @@ export const constantRoutes = [
     component: () => import('@/views/video/play'),
     meta: { title: '视频播放' }
   },
+  // APP用户登录页面
+  {
+    path: '/app/user/login',
+    name: 'AppUserLogin',
+    component: () => import('@/views/app/user/app-user-login'),
+    hidden: true,
+    meta: { title: 'APP用户登录' }
+  },
+  // APP用户注册页面
+  {
+    path: '/app/user/register',
+    name: 'AppUserRegister',
+    component: () => import('@/views/app/user/app-user-register'),
+    hidden: true,
+    meta: { title: 'APP用户注册' }
+  },
   {
     path: '/404',
     component: () => import('@/views/error/404'),
@@ -43,8 +59,8 @@ const router = new Router({
   routes: constantRoutes
 })
 
-// 白名单
-const whiteList = ['/login', '/404']
+// 白名单（不需要登录的页面）
+const whiteList = ['/login', '/404', '/app/user/login', '/app/user/register']
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
@@ -56,7 +72,7 @@ router.beforeEach((to, from, next) => {
   const hasToken = getToken()
 
   if (hasToken) {
-    if (to.path === '/login') {
+    if (to.path === '/login' || to.path === '/app/user/login') {
       // 已登录，跳转到首页
       next({ path: '/' })
     } else {
@@ -64,13 +80,13 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     // 未登录
-    if (whiteList.indexOf(to.path) !== -1) {
+    if (whiteList.indexOf(to.path) !== -1 || whiteList.some(path => to.path.startsWith(path))) {
       // 白名单直接放行
       next()
     } else {
       // 其他页面跳转到登录页
       Toast('请先登录')
-      next(`/login?redirect=${to.path}`)
+      next(`/app/user/login?redirect=${to.path}`)
     }
   }
 })

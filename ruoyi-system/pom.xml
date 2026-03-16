@@ -8,7 +8,7 @@
         <version>3.8.8</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <packaging>jar</packaging>
     <artifactId>ruoyi-system</artifactId>
 
     <description>
@@ -23,7 +23,7 @@
             <artifactId>ruoyi-common</artifactId>
         </dependency>
 
-        <!-- Swagger3依赖 -->
+        <!-- Swagger3 依赖 -->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-boot-starter</artifactId>
@@ -41,6 +41,11 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
+        <!-- Spring Boot Test (包含 JUnit 5) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
 </project>
