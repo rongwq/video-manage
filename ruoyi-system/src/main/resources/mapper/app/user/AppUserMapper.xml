@@ -32,8 +32,12 @@
     <select id="selectAppUserList" parameterType="com.ruoyi.app.user.domain.AppUser" resultMap="AppUserResult">
         <include refid="selectAppUserVo"/>
         <where>
+            del_flag = '0'
             <if test="userName != null and userName != ''">
                 AND user_name like concat('%', #{userName}, '%')
+            </if>
+            <if test="nickName != null and nickName != ''">
+                AND nick_name like concat('%', #{nickName}, '%')
             </if>
             <if test="status != null and status != ''">
                 AND status = #{status}
@@ -57,7 +61,7 @@
 
     <select id="selectAppUserById" parameterType="Long" resultMap="AppUserResult">
         <include refid="selectAppUserVo"/>
-        where user_id = #{userId}
+        where user_id = #{userId} and del_flag = '0'
     </select>
 
     <insert id="insertAppUser" parameterType="com.ruoyi.app.user.domain.AppUser" useGeneratedKeys="true" keyProperty="userId">
