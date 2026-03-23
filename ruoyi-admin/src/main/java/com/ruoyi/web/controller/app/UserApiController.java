@@ -13,6 +13,7 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
+import com.ruoyi.framework.web.service.AppLoginFailLimitService;
 import com.ruoyi.framework.web.service.SysLoginService;
 import com.ruoyi.system.domain.AdUseRecord;
 import com.ruoyi.system.domain.Cdkey;
@@ -53,6 +54,8 @@ public class UserApiController extends BaseController {
     private ICdkeyService CdkeyService;
     @Autowired
     private SysLoginService loginService;
+    @Autowired
+    private AppLoginFailLimitService appLoginFailLimitService;
     @Autowired
     private IAdUseRecordService adUseRecordService;
 
@@ -140,12 +143,27 @@ public class UserApiController extends BaseController {
     @Log(title = "用户登录", businessType = BusinessType.INSERT)
     @Anonymous
     public R login(@RequestBody LoginBody loginBody) {
-        // 生成令牌
-        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
-                loginBody.getUuid());
-        Map map = new HashMap<>();
-        map.put(Constants.TOKEN, token);
-        return R.ok(map);
+        String username = loginBody.getUsername();
+
+        // 检查登录失败次数限制
+        appLoginFailLimitService.validate(username);
+
+        try {
+            // 生成令牌
+            String token = loginService.login(username, loginBody.getPassword(), loginBody.getCode(),
+                    loginBody.getUuid());
+
+            // 登录成功，清空失败次数
+            appLoginFailLimitService.clearFailRecord(username);
+
+            Map map = new HashMap<>();
+            map.put(Constants.TOKEN, token);
+            return R.ok(map);
+        } catch (Exception e) {
+            // 登录失败，记录失败次数
+            appLoginFailLimitService.recordFail(username);
+            throw e;
+        }
     }
 
     /**
