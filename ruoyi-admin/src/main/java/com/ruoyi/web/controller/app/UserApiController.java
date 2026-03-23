@@ -6,9 +6,11 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.entity.SysUserExt;
 import com.ruoyi.common.core.domain.model.LoginBody;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.CdkeyStatus;
+import com.ruoyi.common.enums.IntegralType;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
@@ -16,12 +18,13 @@ import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.web.service.SysLoginService;
 import com.ruoyi.system.domain.AdUseRecord;
 import com.ruoyi.system.domain.Cdkey;
-import com.ruoyi.common.core.domain.entity.SysUserExt;
 import com.ruoyi.system.domain.data.UserData;
 import com.ruoyi.system.service.IAdUseRecordService;
 import com.ruoyi.system.service.ICdkeyService;
+import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserExtService;
 import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.service.IUserIntegralRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +61,14 @@ public class UserApiController extends BaseController {
     private SysLoginService loginService;
     @Autowired
     private IAdUseRecordService adUseRecordService;
+    @Autowired
+    private ISysConfigService configService;
+    @Autowired
+    private IUserIntegralRecordService userIntegralRecordService;
+
+    private static final String ACTIVITY_SWITCH_KEY = "sys.activity.register.switch";
+    private static final String ACTIVITY_EXPIRE_TIME_KEY = "sys.activity.register.expireTime";
+    private static final String ACTIVITY_INTEGRAL_KEY = "sys.activity.register.integral";
 
     @ApiOperation("获取用户详细")
     @ApiImplicitParam(name = "userName", value = "用户账号", required = true, dataType = "int", paramType = "path", dataTypeClass = Integer.class)
@@ -127,6 +141,105 @@ public class UserApiController extends BaseController {
             }
         }
         return R.ok();
+    }
+
+    @ApiOperation("活动注册用户")
+    @PostMapping("/activityReg")
+    @Transactional(rollbackFor = Exception.class)
+    @Anonymous
+    public R<String> activityReg(@RequestBody UserData.ActivityRegUserParam regUser) {
+        String switchValue = configService.selectConfigByKey(ACTIVITY_SWITCH_KEY);
+        if (!"true".equals(switchValue)) {
+            return R.fail("活动未开启");
+        }
+        String expireTimeStr = configService.selectConfigByKey(ACTIVITY_EXPIRE_TIME_KEY);
+        if (StringUtils.isNotEmpty(expireTimeStr)) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date expireTime = sdf.parse(expireTimeStr);
+                if (new Date().after(expireTime)) {
+                    return R.fail("活动已过期");
+                }
+            } catch (ParseException e) {
+                log.error("活动过期时间格式错误", e);
+            }
+        }
+        SysUser user = new SysUser();
+        user.setUserName(regUser.getUserName());
+        user.setPassword(regUser.getPassword());
+        user.setPhonenumber(regUser.getPhonenumber());
+        user.setEmail(regUser.getEmail());
+        user.setNickName(regUser.getUserName());
+        user.setRoleId(100L);
+        user.setDeptId(100L);
+        if (!userService.checkUserNameUnique(user)) {
+            return R.fail("注册用户'" + user.getUserName() + "'失败，登录账号已存在");
+        }
+        if (StringUtils.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(user)) {
+            return R.fail("注册用户'" + user.getUserName() + "'失败，手机号码已存在");
+        }
+        user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
+        int result = userService.insertUser(user);
+        if (result > 0) {
+            String integralStr = configService.selectConfigByKey(ACTIVITY_INTEGRAL_KEY);
+            int giftIntegral = 100;
+            if (StringUtils.isNotEmpty(integralStr)) {
+                try {
+                    giftIntegral = Integer.parseInt(integralStr);
+                } catch (NumberFormatException e) {
+                    log.error("活动赠送积分配置错误", e);
+                }
+            }
+            SysUserExt ext = userExtService.selectSysUserExtByUserId(user.getUserId());
+            if (ext != null) {
+                userIntegralRecordService.saveUserIntegralRecord(
+                    user.getUserId(),
+                    null,
+                    giftIntegral,
+                    IntegralType.REGISTER_GIFT,
+                    "新用户注册赠送积分"
+                );
+            }
+        }
+        return R.ok("注册成功，已赠送" + getGiftIntegral() + "积分");
+    }
+
+    private int getGiftIntegral() {
+        String integralStr = configService.selectConfigByKey(ACTIVITY_INTEGRAL_KEY);
+        if (StringUtils.isNotEmpty(integralStr)) {
+            try {
+                return Integer.parseInt(integralStr);
+            } catch (NumberFormatException e) {
+                log.error("活动赠送积分配置错误", e);
+            }
+        }
+        return 100;
+    }
+
+    @ApiOperation("查询活动状态")
+    @GetMapping("/activityStatus")
+    @Anonymous
+    public R<Map<String, Object>> getActivityStatus() {
+        Map<String, Object> result = new HashMap<>();
+        String switchValue = configService.selectConfigByKey(ACTIVITY_SWITCH_KEY);
+        boolean isOpen = "true".equals(switchValue);
+        result.put("isOpen", isOpen);
+        String expireTimeStr = configService.selectConfigByKey(ACTIVITY_EXPIRE_TIME_KEY);
+        result.put("expireTime", expireTimeStr);
+        String integralStr = configService.selectConfigByKey(ACTIVITY_INTEGRAL_KEY);
+        result.put("giftIntegral", StringUtils.isNotEmpty(integralStr) ? Integer.parseInt(integralStr) : 100);
+        if (isOpen && StringUtils.isNotEmpty(expireTimeStr)) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date expireTime = sdf.parse(expireTimeStr);
+                result.put("isExpired", new Date().after(expireTime));
+            } catch (ParseException e) {
+                result.put("isExpired", false);
+            }
+        } else {
+            result.put("isExpired", false);
+        }
+        return R.ok(result);
     }
 
     /**
