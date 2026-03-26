@@ -9,9 +9,11 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginBody;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.CdkeyStatus;
+import com.ruoyi.common.enums.IntegralType;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanUtils;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.web.service.SysLoginService;
 import com.ruoyi.system.domain.AdUseRecord;
@@ -20,8 +22,10 @@ import com.ruoyi.common.core.domain.entity.SysUserExt;
 import com.ruoyi.system.domain.data.UserData;
 import com.ruoyi.system.service.IAdUseRecordService;
 import com.ruoyi.system.service.ICdkeyService;
+import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserExtService;
 import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.service.IUserIntegralRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +60,10 @@ public class UserApiController extends BaseController {
     private SysLoginService loginService;
     @Autowired
     private IAdUseRecordService adUseRecordService;
+    @Autowired
+    private ISysConfigService configService;
+    @Autowired
+    private IUserIntegralRecordService userIntegralRecordService;
 
     @ApiOperation("获取用户详细")
     @ApiImplicitParam(name = "userName", value = "用户账号", required = true, dataType = "int", paramType = "path", dataTypeClass = Integer.class)
@@ -125,8 +134,40 @@ public class UserApiController extends BaseController {
                 }
                 userExtService.updateSysUserExt(ext);
             }
+            //检查活动是否开启和过期
+            boolean activityEnabled = checkActivityStatus();
+            if (activityEnabled) {
+                //赠送100积分
+                userIntegralRecordService.saveUserIntegralRecord(user.getUserId(), null, 100, IntegralType.REGISTER, "注册赠送积分活动");
+            }
         }
         return R.ok();
+    }
+
+    /**
+     * 检查活动状态
+     * @return 是否启用
+     */
+    private boolean checkActivityStatus() {
+        //检查活动开关
+        String activityEnabled = configService.selectConfigByKey("sys.activity.register.integral.enabled");
+        if (StringUtils.isEmpty(activityEnabled) || !"true".equals(activityEnabled)) {
+            return false;
+        }
+        //检查活动过期时间
+        String activityExpireTime = configService.selectConfigByKey("sys.activity.register.integral.expireTime");
+        if (StringUtils.isNotEmpty(activityExpireTime)) {
+            try {
+                Date expireTime = DateUtils.parseDate(activityExpireTime);
+                if (new Date().after(expireTime)) {
+                    return false;
+                }
+            } catch (Exception e) {
+                log.error("解析活动过期时间失败", e);
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
