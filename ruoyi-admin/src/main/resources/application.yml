@@ -49,6 +49,8 @@ user:
 
 # Spring配置
 spring:
+  jackson:
+    time-zone: GMT+8
   # 资源信息
   messages:
     # 国际化资源文件路径
@@ -129,3 +131,4 @@ xss:
   excludes: /system/notice
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*
+

@@ -8,6 +8,7 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.RegisterBody;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.enums.IntegralType;
 import com.ruoyi.common.exception.user.CaptchaException;
 import com.ruoyi.common.exception.user.CaptchaExpireException;
 import com.ruoyi.common.utils.MessageUtils;
@@ -17,6 +18,8 @@ import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.service.IRegisterActivityService;
+import com.ruoyi.system.service.IUserIntegralRecordService;
 
 /**
  * 注册校验方法
@@ -34,6 +37,12 @@ public class SysRegisterService
 
     @Autowired
     private RedisCache redisCache;
+
+    @Autowired
+    private IRegisterActivityService registerActivityService;
+
+    @Autowired
+    private IUserIntegralRecordService userIntegralRecordService;
 
     /**
      * 注册
@@ -84,10 +93,40 @@ public class SysRegisterService
             }
             else
             {
+                // 检查是否有注册送积分活动
+                checkRegisterActivity(sysUser);
                 AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.REGISTER, MessageUtils.message("user.register.success")));
             }
         }
         return msg;
+    }
+
+    /**
+     * 检查注册送积分活动
+     */
+    private void checkRegisterActivity(SysUser sysUser)
+    {
+        try
+        {
+            // 查询当前有效的活动配置
+            com.ruoyi.system.domain.RegisterActivity activity = registerActivityService.selectCurrentActivity();
+            if (activity != null && activity.getIntegral() > 0)
+            {
+                // 赠送积分
+                userIntegralRecordService.saveUserIntegralRecord(
+                    sysUser.getUserId(),
+                    null,
+                    activity.getIntegral(),
+                    IntegralType.REGISTER,
+                    "注册送积分活动赠送"
+                );
+            }
+        }
+        catch (Exception e)
+        {
+            // 积分赠送失败不影响注册流程
+            e.printStackTrace();
+        }
     }
 
     /**
