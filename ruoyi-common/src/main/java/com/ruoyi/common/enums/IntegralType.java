@@ -7,7 +7,9 @@ package com.ruoyi.common.enums;
  */
 public enum IntegralType
 {
-    RECHARGE("1", "积分充值"), BUY_VIDEO("2", "购买视频");
+    RECHARGE("1", "积分充值"),
+    BUY_VIDEO("2", "购买视频"),
+    REG_GIFT("3", "注册赠送");
 
     private final String code;
     private final String info;

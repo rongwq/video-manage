@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.RegActivityConfigMapper">
+
+    <resultMap type="RegActivityConfig" id="RegActivityConfigResult">
+        <result property="id"    column="id"    />
+        <result property="activityName"    column="activity_name"    />
+        <result property="activityStatus"    column="activity_status"    />
+        <result property="giveIntegral"    column="give_integral"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectRegActivityConfigVo">
+        select id, activity_name, activity_status, give_integral, start_time, end_time, remark, create_by, create_time, update_by, update_time from v_reg_activity_config
+    </sql>
+
+    <select id="selectRegActivityConfigList" parameterType="RegActivityConfig" resultMap="RegActivityConfigResult">
+        <include refid="selectRegActivityConfigVo"/>
+        <where>
+            <if test="activityName != null  and activityName != ''"> and activity_name like concat('%', #{activityName}, '%')</if>
+            <if test="activityStatus != null  and activityStatus != ''"> and activity_status = #{activityStatus}</if>
+            <if test="giveIntegral != null "> and give_integral = #{giveIntegral}</if>
+            <if test="startTime != null "> and start_time &gt;= #{startTime}</if>
+            <if test="endTime != null "> and end_time &lt;= #{endTime}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectRegActivityConfigById" parameterType="Long" resultMap="RegActivityConfigResult">
+        <include refid="selectRegActivityConfigVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectRegActivityConfigByStatus" resultMap="RegActivityConfigResult">
+        <include refid="selectRegActivityConfigVo"/>
+        where activity_status = #{activityStatus}
+        order by create_time desc
+        limit 1
+    </select>
+
+    <insert id="insertRegActivityConfig" parameterType="RegActivityConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into v_reg_activity_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="activityName != null">activity_name,</if>
+            <if test="activityStatus != null">activity_status,</if>
+            <if test="giveIntegral != null">give_integral,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="activityName != null">#{activityName},</if>
+            <if test="activityStatus != null">#{activityStatus},</if>
+            <if test="giveIntegral != null">#{giveIntegral},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateRegActivityConfig" parameterType="RegActivityConfig">
+        update v_reg_activity_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="activityName != null">activity_name = #{activityName},</if>
+            <if test="activityStatus != null">activity_status = #{activityStatus},</if>
+            <if test="giveIntegral != null">give_integral = #{giveIntegral},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRegActivityConfigById" parameterType="Long">
+        delete from v_reg_activity_config where id = #{id}
+    </delete>
+
+    <delete id="deleteRegActivityConfigByIds" parameterType="String">
+        delete from v_reg_activity_config where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
