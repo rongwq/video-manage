@@ -16,6 +16,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.exception.DemoModeException;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.exception.user.AppLoginLockedException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.html.EscapeUtil;
 
@@ -141,5 +142,14 @@ public class GlobalExceptionHandler
     public AjaxResult handleDemoModeException(DemoModeException e)
     {
         return AjaxResult.error("演示模式，不允许操作");
+    }
+
+    /**
+     * APP登录锁定异常
+     */
+    @ExceptionHandler(AppLoginLockedException.class)
+    public AjaxResult handleAppLoginLockedException(AppLoginLockedException e, HttpServletRequest request)
+    {
+        return AjaxResult.error(e.getMessage());
     }
 }
